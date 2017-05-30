@@ -19,7 +19,7 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/modwsgi/
 ## Fast route (development mode) ##
 In order to get algoweb working even quicker, you need to:
 * Perform points 1-6 from the above list.
-* Execute `manage.py runpoller` - this is essential background task which should run continously.
+* Execute `manage.py runpoller` - this is essential background task which should run continuously.
 * Execute `manage.py runserver` - this is the proper HTTP development server.
 
 ## How to login ##
