@@ -1,0 +1,11 @@
+*.pyc
+*.pyo
+*.sqlite3
+/.idea/
+/algoweb/settings.py
+/algoweb/wsgi.py
+/webapp/migrations/*
+!/webapp/migrations/__init__.py
+/webapp/media/*
+!/webapp/media/.empty
+.DS_Store

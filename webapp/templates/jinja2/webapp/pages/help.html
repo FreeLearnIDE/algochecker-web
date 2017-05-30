@@ -1,0 +1,129 @@
+{% extends "webapp/_layout.html" %}
+
+{% block title %}Help | {% endblock %}
+
+{% block body %}
+    <div class="justify-p">
+    <h1>Important information</h1>
+    <p>Algochecker is a system which performs automatic testing of programs submitted by users. In order to get along
+        with it, you need to comply with these rules:</p>
+        <ul>
+            <li>Use only the programming languages allowed by the lecturer and upload only your source code unless
+                explicitly asked otherwise.</li>
+            <li>Your program must perform only actions which are described in the instruction</li>
+            <li>Read the tasks very carefully and be very, very precise.</li>
+        </ul>
+    <p>More details are listed below.</p>
+    <h2>Code submissions</h2>
+    <p>Usually, you are requested to upload <strong>only</strong> the source code of your program. Depending on the
+        programming language, the source files have the following extensions:</p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>language</th>
+            <th>extensions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>C</td>
+            <td><code>.c</code>, <code>.h</code></td>
+        </tr>
+        <tr>
+            <td>C++</td>
+            <td><code>.cpp</code>, <code>.hpp</code></td>
+        </tr>
+        <tr>
+            <td>Python</td>
+            <td><code>.py</code></td>
+        </tr>
+        <tr>
+            <td>Java</td>
+            <td><code>.java</code></td>
+        </tr>
+        </tbody>
+    </table>
+    <p>Unless asked explicitly, please do not upload any binaries and project files like <code>.exe</code>,
+        <code>.obj</code> or <code>.cbp</code>.</p>
+    <p>Also, your source code should contain everything, which is required for a program in order to be compilable. This
+        means that all required headers (imports) have to be included, all definitions of custom functions must be
+        provided etc.</p>
+    <h2>Program output requirements</h2>
+    <p>Similarly to the real world programming, each task has a very strictly defined "protocol". What does it mean in
+        simple words?</p>
+    <p>If you are asked to write a program in C language which reads two numbers and then prints a single number being
+        the sum of these numbers, then you should do it like this:</p>
+    <pre class="highlight-no-lines"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>
+    <span class="n">scanf</span><span class="p">(</span><span class="s">"%d %d"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></pre>
+
+
+    <p>Such solution is fully correct, but remember that your program is <strong>not allowed</strong> to print any
+        additional text unless it is stated explicitly in the task description.</p>
+    <p><strong>Do not write like this:</strong></p>
+    <pre class="highlight-no-lines"><span></span><span class="n">printf</span><span class="p">(</span><span class="s">"The sum of numbers is: %d"</span><span class="p">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">);</span></pre>
+
+
+    <p><strong>Also do not write like this:</strong></p>
+    <pre class="highlight-no-lines"><span></span><span class="n">printf</span><span class="p">(</span><span class="s">"Please enter the first number: "</span><span class="p">);</span>
+
+<span class="c1">// ... some code which reads the number ...</span></pre>
+
+
+    <p>Such program would be immediately marked as totally incorrect, because the task was to output <strong>just a
+        number</strong>, nothing else. Similarly, if the task is to output <code>YES</code> and you would output <code>yes</code>
+        or <code>Yes</code> instead then the answer is also considered improper.</p>
+    <p>Your program is going to be automatically tested by a machine (and machines are "stupid"), so every mistake is
+        treated as an error. For that reason, usually you have multiple possibilities to improve your code and send it
+        again.</p>
+    <p>Requirements stated above may sound silly, but during your potential work as a programmer, from time to time you
+        may be asked to write a program in a very strict manner according to a specification. For instance, a program
+        which produces an image (let's say a <code>.bmp</code> file) must do it perfectly according to the file format
+        requirements. Any small mistake would cause the image not to be displayed, but you would see a "corrupted file"
+        error instead. Because of this, being precise is a very important skill which will allow you to make a lot of
+        money :)</p>
+    <p>If you feel that the program is correct, but the Algochecker is still giving you 0% and you are starting to get
+        mad, please use the <a href="{{ url('feedback') }}">Feedback</a> form (the link is also available at the bottom of each
+        page). In the form, state which task you are fighting with, what your name is and shortly describe the problem.
+    </p>
+    <h2>Test result interpretation</h2>
+    <p>After your program has been evaluated by the Algochecker, you are able to see the report created by the checking
+        machine.</p>
+    <p class="text-center"><img class="img-responsive img-thumbnail" src="{{ static("webapp/img/help_viewreport.png") }}"></p>
+    <p>The "Tests" table present in the report describes results of tests performed against your programs. If there are
+        4 rows in the table, then it means that your program was tested using 4 different data sets.</p>
+    <p class="text-center"><img class="img-responsive img-thumbnail" src="{{ static("webapp/img/help_tests.png") }}"></p>
+    <p>The screenshot presents the following situation:</p>
+        <ul>
+            <li>two tests were passed successfully, so the program gave a proper result</li>
+            <li>for some data the program gave wrong results, so "bad answer" label appeared</li>
+            <li>for some other data the program hanged for more than 2 seconds, so the test was assumed to be failed</li>
+        </ul>
+    <h3>Test grouping</h3>
+    <p>Sometimes tests can be grouped. Naming convention for that is <code>{group_name}-{test_name}</code>.
+        Grouping means that the group of tests is marked as it was a single test. For example, passing one test in a group
+        consisting of two tests means that the whole group is failed.</p>
+    <p><b>Reasoning:</b> this is done in order to prevent programs which output, say, static answer to a question which requires
+        "yes" or "no" to get some reasonable score.</p>
+    <p><b>Example:</b> consider the task which requires to output "yes" if an integer is divisible
+        by 10 and "no" otherwise. For this task there are defined 4 tests. Two of them require answer "yes" and two — "no".
+        So the program which outputs "yes" will get 50% of the score even though it does basically nothing.
+    </p>
+    <h3>Input data</h3>
+    <p>There is no possibility to see what data caused the program to malfunction. The only option is to read the task
+        once again and then read your code very carefully in order to find mistakes.</p>
+    <p>Testing is always performed using valid sets of data. This means - using input data which satisfy all
+        requirements described in the instruction for the task. If your program was not evaluated to 100% then you have to
+        find some valid data set which causes program to work improperly.</p>
+    </div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ static("webapp/css/highlight.css") }}" />
+{% endblock %}

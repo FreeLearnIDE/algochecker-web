@@ -1,0 +1,62 @@
+{% extends "webapp/_layout.html" %}
+
+{% block body_elements %}
+<div class="jumbotron jmb-index">
+    <div class="container">
+        <h1>Algochecker</h1>
+        <p>
+            &hellip;is the system which allows to set up programming competitions and is capable of evaluating algorithm's
+            performance. Automatically.
+        </p>
+        <div class="">
+            <div class="btn-margin">
+                <a class="btn btn-primary btn-lg" href="{{ url('help') }}" role="button">
+                    <span class="glyphicon glyphicon-info-sign"></span> Usage manual
+                </a>
+            </div>
+            <div class="btn-margin">
+                <a class="btn btn-success btn-lg" href="{{ url('tasks') }}" role="button">
+                    <span class="glyphicon glyphicon-apple"></span> View tasks
+                </a>
+            </div>
+            {% if request.user.is_staff %}
+                <div class="btn-margin">
+                    <a class="btn btn-success btn-lg" href="{{ url('staff_dashboard') }}" role="button">
+                        <span class="glyphicon glyphicon-wrench"></span> Staff dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <p></p>
+    </div>
+</div>
+<div class="container">
+    {% block global_alert_message %}{{ super() }}{% endblock %}
+    {% block messages %}{{ super() }}{% endblock %}
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+          <h2>Automation</h2>
+          <p>
+              Results of the evaluation are almost immediate since submitted programs are checked automatically,
+              basing on the acceptance tests defined by the task author.
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h2>Teaching</h2>
+          <p>
+              Algochecker is used as a tool for arranging and checking project assignments related to programming,
+              thus supplementing the lecture.
+          </p>
+       </div>
+        <div class="col-md-4">
+          <h2>Contests</h2>
+          <p>
+              The platform is designed with an assumption that scaling must be quick and straightforward,
+              hence it can handle hundreds contestants at once.
+          </p>
+        </div>
+      </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "webapp/admin/_confirm_page.html" %}
+
+{% set color_scheme = 'warning' if group.is_public else 'success' %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_group_access', args=[group.id]) }}">Access control</a></li>
+        <li class="active">Make {{'private' if group.is_public else 'public' }}</li>
+    </ol>
+{% endblock %}
+
+{% block action_title %}
+Confirm making &laquo;{{ group.name }}&raquo; {{'private' if group.is_public else 'public' }}
+{% endblock %}
+
+{% block action_text %}
+    {% if group.is_public %}
+        <p class="text-center">
+            After making this group private you will have to set up access privileges for users.<br>
+            You will be able to do this explicitly for certain users or by exporting .csv file from studia server.
+        </p>
+        <p class="text-center">
+            This type of access setting is suitable for normal semester courses.
+        </p>
+    {% else %}
+        <p class="text-center">
+            After making this group public every user, registered in the system, will be able
+            to access every published task in this group and make submissions according to particular task setup.
+        </p>
+        <p class="text-center">
+            This type of access setting is suitable for some training materials for everyone.
+        </p>
+    {% endif %}
+{% endblock %}

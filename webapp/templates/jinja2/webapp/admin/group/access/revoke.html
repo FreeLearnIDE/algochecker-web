@@ -1,0 +1,34 @@
+{% extends "webapp/admin/_confirm_page.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_group_access', args=[group.id]) }}">Access control</a></li>
+        <li class="active">Revoke access</li>
+    </ol>
+{% endblock %}
+
+{% block action_title %}
+Are you sure you want to revoke this access privilege?
+{% endblock %}
+
+{% block action_text %}
+    <p class="text-center">
+        {{ member.role|capitalize }} role in &laquo;{{ group.name }}&raquo; group for
+        {% if member.user %}
+            {{ member.user.first_name }} {{ member.user.last_name }}
+        {% else %}
+            {% if member.provider_first_name and member.provider_last_name %}
+                {{ member.provider_first_name }} {{ member.provider_last_name }}
+            {% else %}
+                unassigned user with provider id {{ member.provider_id }}
+            {% endif %}
+        {% endif %}
+    </p>
+    {% if own %}
+        <p class="text-center text-warning">Be aware that you are revoking your own access!</p>
+    {% endif %}
+
+{% endblock %}

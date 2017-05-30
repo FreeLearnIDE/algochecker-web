@@ -1,0 +1,72 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+         <li><a href="{{ url('index') }}">Home</a></li>
+         <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+         <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+         <li><a href="{{ url('staff_task_details', args=[task.id]) }}">{{ task.name|truncate(35) }}</a></li>
+         <li class="active">Submissions of {{ user.last_name }}</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+
+    <h3 class="text-center">Submissions of {{ user.first_name|short_name }} {{ user.last_name }}</h3>
+    <hr>
+
+    {% if not evaluations %}
+        <div class="alert alert-info text-center" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span> No submissions received
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="20%">Submit time</th>
+                        <th width="35%">Status</th>
+                        <th width="15%">Score</th>
+                        <th width="20%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for evaluation in evaluations %}
+                    {% with submission = evaluation.submission %}
+                        <tr{% if evaluation.is_invalid %} class="danger"{% endif %}>
+                            <td>{{ submission.submitted|fltime }}</td>
+                            <td>
+                                {% if evaluation.status == 'ok' %}
+                                    <span class="label label-success">
+                                        <span class="glyphicon glyphicon-ok"></span> evaluated
+                                    </span>
+                                {% else %}
+                                    <span class="label label-danger">
+                                        <span class="glyphicon glyphicon-exclamation-sign"></span> rejected
+                                    </span>&nbsp;
+                                    {% if evaluation.view_info.status %}
+                                        <span class="glyphicon glyphicon-chevron-right"></span>&nbsp;
+                                        <span class="label label-warning">{{ evaluation.view_info.status }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if evaluation.score is not none %}
+                                    {% if evaluation.is_invalid %}<del class="text-{{ evaluation.view_info.color }}">{% endif %}
+                                        <span class="text-{{ evaluation.view_info.color }}">{{ evaluation.score }}%</span>
+                                    {% if evaluation.is_invalid %}</del>{% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                <a href="{{ url('staff_submission_reevaluate', args=[submission.uuid]) }}?next={{ url('staff_task_submissions_user', args=[task.id, user.id]) }}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-repeat"></span> Re-evaluate</a>
+                                <a href="{{ url('staff_submission_report', args=[submission.uuid]) }}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-list-alt"></span> View report</a>
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+{% endblock %}

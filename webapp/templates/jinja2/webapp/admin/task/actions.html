@@ -1,0 +1,68 @@
+{% extends "webapp/_layout.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ static('webapp/lib/bootstrap-datepicker/css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ static("webapp/css/highlight.css") }}" />
+{% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        {% if task %}
+            <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+            <li><a href="{{ url('staff_task_details', args=[task.id]) }}">{{ task.name|truncate(35) }}</a></li>
+            <li class="active">Edit</li>
+        {% else %}
+            <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+            <li class="active">Add task to set &laquo;{{ set.name }}&raquo;</li>
+        {% endif %}
+    </ol>
+{% endblock %}
+
+{% block body %}
+
+    <h3 class="text-center">{% if task %}Edit task &laquo;{{ task.name }}&raquo;{% else %}Add task to {{ group.name }}: {{ set.name }}{% endif %}</h3>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-xs-offset-0 col-lg-10 col-lg-offset-1">
+            <form action="{% if task %}{{ url('staff_task_edit', args=[task.id]) }}{% else %}{{ url('staff_task_create', args=[group.id, set.id]) }}{% endif %}"
+                  method="post" enctype="multipart/form-data" class="form-horizontal" id="task_form">
+                {{ csrf_input }}
+                {% from "webapp/macro/forms.html" import h_form_fields, h_action_buttons, h_field_errors, h_field_label %}
+                {{ h_form_fields(form, 'col-sm-3 col-md-2', 'col-sm-9 col-md-10') }}
+                {{
+                    h_action_buttons
+                        (
+                            'col-sm-offset-3 col-sm-9 col-md-offset-2 col-md-10',
+                            {'name': 'Save' if task else 'Add', 'icon': 'ok'},
+                            {'icon': 'remove'},
+                            '<button type="button" class="btn btn-success" id="md_dsc_toggle"><span class="glyphicon glyphicon-eye-open"></span> Preview description</button>'
+                        )
+                }}
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="md_dsc_preview" tabindex="-1" role="dialog" aria-labelledby="md_dsc_preview_label">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="md_dsc_preview_label">Preview of description</h4>
+                </div>
+                <div class="modal-body markdown-description"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static('webapp/js/forms.js') }}"></script>
+    <script src="{{ static('webapp/lib/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ static('webapp/js/admin/task_actions.js') }}"></script>
+{% endblock %}

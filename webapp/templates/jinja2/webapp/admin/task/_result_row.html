@@ -1,0 +1,22 @@
+{% for result in results %}
+    {% set evaluation = result %}
+    {% set submission = result.submission %}
+    {% set user = result.submission.user %}
+    <tr{{ '' if _flag else ' class="info"'|safe }}>
+        <td><a href="{{ url('staff_group_user_reports', args=[group.id, user.id])}}">{{ user.first_name|short_name }} {{ user.last_name }} <small>({{ user.username }})</small></a></td>
+        <td>
+            {% if evaluation.score is not none %}
+                <span class="text-{{ evaluation.view_info.color }}">{{ evaluation.score }}%</span>
+            {% endif %}
+        </td>
+        <td>{{ submission.submitted|fltime }}</td>
+        <td class="text-right">
+            <a href="{{ url('staff_submission_report', args=[submission.uuid]) }}" class="btn btn-default btn-xs">
+                <span class="glyphicon glyphicon-zoom-in"></span> Details
+            </a>
+            <a href="{{ url('staff_task_submissions_user', args=[task.id, user.id]) }}" class="btn btn-default btn-xs">
+                <span class="glyphicon glyphicon-user"></span> View all
+            </a>
+        </td>
+    </tr>
+{% endfor %}

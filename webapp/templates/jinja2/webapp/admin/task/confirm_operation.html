@@ -1,0 +1,96 @@
+{% extends "webapp/admin/_confirm_page.html" %}
+
+{% set color_scheme = 'success' if op.action == 'validate' else 'danger' %}
+{% set multiple = 's' if evaluations|length > 1 else '' %}
+{% set sb = 'selected submission{}'.format(multiple) if op.is_bulk else 'this submission' %}
+{% set action = 'validity restoring' if op.action == 'validate' else ('invalidation' if op.action == 'invalidate' else 're-evaluation') %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_task_details', args=[task.id]) }}">{{ task.name|truncate(35) }}</a></li>
+        <li class="active">Confirm{% if op.is_bulk and evaluations|length > 1 %} bulk{% endif %} action</li>
+    </ol>
+{% endblock %}
+
+{% block extra_class %} submission-operation{% endblock %}
+
+{% block action_title %}
+Please confirm{% if op.is_bulk and evaluations|length > 1  %} bulk{% endif %} {{ action }}
+{% endblock %}
+
+{% block action_text %}
+    {% if op.action == 'reevaluate' %}
+        <p class="text-center">
+            Please confirm that you want to re-evaluate<br>
+            {{ sb }}.
+        </p>
+        <p class="text-center">
+            This action will be resembled in the newly re-evaluated report{{ multiple }}<br>
+            with your name as an invoker of this action.
+        </p>
+        <p class="text-center">
+            Re-evaluation process has a lower priority than evaluation of regular submissions.<br>
+            Hence, it won't affect regular users and may take a while.
+        </p>
+    {% elif op.action == 'invalidate' %}
+        <p class="text-center">
+            The result of the evaluation of {{ sb }}<br>
+            will not be taken into account when displaying overall results.
+        </p>
+
+        <p class="text-center">
+            Please note that invalid submissions still count up<br>
+            to the submission limit set for a task.
+        </p>
+
+        <p class="text-center">
+            This action will be resembled in the report{{ multiple }}
+            with your name as an invoker of this action.
+        </p>
+
+        <p class="text-center">
+            Please type in the reason of marking {{ sb }} as invalid:
+        </p>
+    {% elif op.action == 'validate' %}
+        <p class="text-center">
+            Validity of
+            {% if op.is_bulk %}
+                selected submission{{ multiple }}
+            {% else %}
+                this submission
+            {% endif %}
+            will be restored
+        </p>
+        <p class="text-center">
+            The result of the evaluation of {{ sb }}<br>
+            will be taken into account when displaying overall results.
+        </p>
+    {% else %}
+        <p class="text-center text-danger">unknown action</p>
+    {% endif %}
+{% endblock %}
+
+{% block form_extra_inputs %}
+    {% if op.action == 'invalidate' %}
+        {% from "webapp/macro/forms.html" import bootsrap_input %}
+        {{ bootsrap_input(form.comment) }}
+        <br>
+    {% endif %}
+    <input type="hidden" name="cancel-action" value="0" id="sbm-cancel">
+{% endblock %}
+
+{% block action_text_extra %}
+    {% if op.is_bulk %}
+        <p class="text-muted text-center">
+            Submissions to be affected: <b>{{ evaluations|length }}</b>
+        </p>
+    {% endif %}
+    {% if op.action == 'validate' or op.action == 'invalidate' %}
+        <p class="text-muted text-center">
+            <small>This action is reversible.</small>
+        </p>
+    {% endif %}
+{% endblock %}

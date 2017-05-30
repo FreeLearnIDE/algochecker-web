@@ -1,0 +1,38 @@
+{% extends "webapp/_layout_narrow.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        {% if group %}
+            <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+            <li class="active">Edit</li>
+        {% else %}
+            <li class="active">Create group</li>
+        {% endif %}
+    </ol>
+{% endblock %}
+
+{% block body %}
+
+    <h3 class="text-center">{% if group %}Edit group &laquo;{{ group.name }}&raquo;{% else %}Create group{% endif %}</h3>
+    <hr>
+    <form class="form-horizontal" action="{% if group %}{{ url('staff_group_edit', args=[group.id]) }}{% else %}{{ url('staff_group_create') }}{% endif %}" method="POST">
+        {{ csrf_input }}
+        {% from "webapp/macro/forms.html" import h_form_fields, h_action_buttons %}
+        {{ h_form_fields(form, 'col-sm-3 col-md-2', 'col-sm-9 col-md-10') }}
+        {{
+            h_action_buttons
+                (
+                    'col-sm-offset-3 col-sm-9 col-md-offset-2 col-md-10',
+                    {'name': 'Save' if group else 'Create', 'icon': 'ok'},
+                    {'icon': 'remove' }
+                )
+        }}
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static("webapp/js/forms.js") }}"></script>
+{% endblock %}

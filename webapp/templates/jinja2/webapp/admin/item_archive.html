@@ -1,0 +1,97 @@
+{% extends "webapp/admin/_confirm_page.html" %}
+
+{% set color_scheme = 'success' if item.archived else 'danger' %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        {% if item_name == 'group' %}
+            <li><a href="{{ url('staff_group_tasks', args=[item.id]) }}">{{ item.name }}</a></li>
+        {% else %}
+            <li><a href="{{ url('staff_group_tasks', args=[item.task_group.id]) }}">{{ item.task_group.name|truncate(35) }}</a></li>
+            <li><a href="{{ url('staff_task_details', args=[item.id]) }}">{{ item.name|truncate(35) }}</a></li>
+        {% endif %}
+        <li class="active">{% if item.archived %}Restore{% else %}Remove{% endif %}</li>
+    </ol>
+{% endblock %}
+
+{% block action_title %}
+Are you sure you want to {{ 'restore' if item.archived else 'archive' }} &laquo;{{ item.name }}&raquo;?
+{% endblock %}
+
+{% block action_text %}
+
+    {% if item_name == 'group' %}
+        {% if item.archived %}
+            <h5 class="text-center">Consequences for users:</h5>
+            <ul>
+                <li>the group will appear in the list of groups</li>
+                <li>all published and not previously archived tasks in the group will also be restored</li>
+                <li>submissions to non archived tasks will be accepted unless the deadline and/or limit is reached</li>
+            </ul>
+            <h5 class="text-center">Consequences for staff:</h5>
+            <ul>
+                <li>the group will become editable</li>
+                <li>all tasks which were not archived prior to the group removal will also become unarchived, hence editable </li>
+            </ul>
+        {% else %}
+            <h5 class="text-center">Consequences for users:</h5>
+            <ul>
+                <li>the group will disappear from the list of groups</li>
+                <li>all published tasks will remain accessible by a direct link</li>
+                <li>no submissions to whatever task will be accepted</li>
+            </ul>
+            <h5 class="text-center">Consequences for staff:</h5>
+            <ul>
+                <li>the group will not be editable</li>
+                <li>all tasks in the group will become archived</li>
+                <li>access control will remain active — no restrictions on grant/revoke</li>
+            </ul>
+            <p class="text-muted text-center">
+                <small>
+                    Archiving is reversible. At any time you will be able to restore this group.<br>
+                    Note that when the group will be restored, currently archived tasks will remain archived.
+                </small>
+            </p>
+        {% endif %}
+    {% else %}
+        {% if item.archived %}
+            <h5 class="text-center">Consequences for users:</h5>
+            <ul>
+                {% if item.published %}
+                    <li>the task will be returned to the list of tasks</li>
+                    <li>submissions will be possible unless the deadline and/or limit is reached</li>
+                {% else %}
+                    <li>since this task is not published, there will be no  consequences for users</li>
+                {% endif %}
+            </ul>
+            <h5 class="text-center">Consequences for staff:</h5>
+            <ul>
+                <li>task will become editable</li>
+            </ul>
+        {% else %}
+            <h5 class="text-center">Consequences for users:</h5>
+            <ul>
+                {% if item.published %}
+                    <li>the task will disappear from the list of tasks in the group</li>
+                    <li>access to the task will be possible by a direct link</li>
+                    <li>no new submissions to this task will be accepted</li>
+                    <li>reports will remain accessible (by direct link or from the task)</li>
+                {% else %}
+                    <li>since this task is not published, there will be no consequences for users</li>
+                {% endif %}
+            </ul>
+            <h5 class="text-center">Consequences for staff:</h5>
+            <ul>
+                <li>task will not be editable</li>
+            </ul>
+            <p class="text-muted text-center">
+                <small>
+                    Archiving is reversible. At any time you will be able to restore this task.
+                </small>
+            </p>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "webapp/_layout_narrow.html" %}
+{% set extra_narrow = True %}
+
+{% block body %}
+
+    {% if not color_scheme %}{% set color_scheme = 'danger' %}{% endif %}
+    <div class="well well-sm{% block extra_class %}{% endblock %}" id="action-dialog">
+        <h4 class="text-{{ color_scheme }} text-center">{% block action_title %}Confirm action{% endblock %}</h4>
+        {% block action_text %}{% endblock %}
+        <form id="action-form" class="form" method="POST"{% if form_action_url %} action="{{ form_action_url }}"{% endif %}>
+            {{ csrf_input }}
+            <input type="hidden" name="cancel-action" value="0" id="cancel_action">
+            {% block form_extra_inputs %}{% endblock %}
+        </form>
+        {% block action_text_extra %}{% endblock %}
+        <hr>
+        <div class="clearfix">
+            <a href="#" id="btn-cancel" class="btn btn-primary">Cancel</a>
+            <a href="#" id="btn-confirm" class="btn btn-{{ color_scheme }} pull-right">Confirm</a>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static("webapp/js/admin/confirm_page.js") }}"></script>
+{% endblock %}

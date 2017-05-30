@@ -1,0 +1,11 @@
+bleach
+Django>=1.10
+django-cas-ng
+Markdown
+redis
+Jinja2
+uuid
+psycopg2
+Pygments
+PyYAML
+python-markdown-math

@@ -1,0 +1,12 @@
+{% extends "webapp/report.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[submission.task.task_group.id]) }}">{{ submission.task.task_group.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_task_details', args=[submission.task.id]) }}">{{ submission.task.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_task_submissions_user', args=[submission.task.id, user.id]) }}">Submissions of {{ user.last_name }}</a></li>
+        <li class="active">Report</li>
+    </ol>
+{% endblock %}

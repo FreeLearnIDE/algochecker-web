@@ -1,0 +1,11 @@
+{%- macro task_deadline(task, class='muted', details=False) -%}
+{% if task.deadline %}
+    {% set deadline = task.get_deadline_data() %}
+    <span class="text-{{ 'danger' if deadline.missed else ('warning' if deadline.soon else class) }}">
+        <b>Deadline: </b>{{ task.deadline|fltime }}
+        {% if details and deadline.soon %}
+            ({{ 'passed' if deadline.missed else 'soon' }})
+        {% endif %}
+    </span>
+{% endif %}
+{%- endmacro -%}

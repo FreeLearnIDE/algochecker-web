@@ -1,0 +1,47 @@
+{% extends "webapp/_layout.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ static('webapp/lib/bootstrap-datepicker/css/bootstrap-datepicker.css') }}">
+{% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li class="active">Bulk set deadlines</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+
+    <h3 class="text-center">Bulk set deadlines for &laquo;{{ group.name }}&raquo; task sets</h3>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-xs-offset-0 col-lg-10 col-lg-offset-1">
+            {% from "webapp/macro/forms.html" import h_form_fields, h_action_buttons %}
+            <form class="form-horizontal" action="{{ url('staff_group_deadlines', args=[group.id]) }}" method="POST">
+                {{ csrf_input }}
+                {% for form in forms %}
+                    {{ h_form_fields(form, 'col-sm-4 col-md-3', 'col-sm-8 col-md-9') }}
+                {% endfor %}
+                {{
+                    h_action_buttons
+                        (
+                            'col-sm-offset-4 col-sm-8 col-md-offset-3 col-md-9',
+                            {'name': 'Apply', 'icon': 'ok', 'class': 'sm btn-success'},
+                            {'icon': 'remove'}
+                        )
+                }}
+                {{ forms.management_form }}
+            </form>
+            <p class="text-right text-muted">You may fill the deadline for some task sets. Filling all is optional.</p>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static('webapp/js/forms.js') }}"></script>
+    <script src="{{ static('webapp/lib/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+{% endblock %}

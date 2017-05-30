@@ -1,0 +1,38 @@
+{% extends "webapp/_layout_narrow.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        {% if set %}
+            <li class="active">Edit set &laquo;{{ set.name|truncate(35) }}&raquo;</li>
+        {% else %}
+            <li class="active">Create set</li>
+        {% endif %}
+    </ol>
+{% endblock %}
+
+{% block body %}
+
+    <h3 class="text-center">{% if set %}Edit set &laquo;{{ set.name }}&raquo;{% else %}Create set{% endif %} in group &laquo;{{ group.name }}&raquo;</h3>
+    <hr>
+    <form class="form-horizontal" action="{% if set %}{{ url('staff_group_set_edit', args=[group.id, set.id]) }}{% else %}{{ url('staff_group_set_create', args=[group.id]) }}{% endif %}" method="POST">
+        {{ csrf_input }}
+        {% from "webapp/macro/forms.html" import h_form_fields, h_action_buttons %}
+        {{ h_form_fields(form, 'col-sm-3 col-md-2', 'col-sm-9 col-md-10') }}
+        {{
+            h_action_buttons
+                (
+                    'col-sm-offset-3 col-sm-9 col-md-offset-2 col-md-10',
+                    {'name': 'Save' if set else 'Create', 'icon': 'ok'},
+                    {'icon': 'remove' }
+                )
+        }}
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static("webapp/js/forms.js") }}"></script>
+{% endblock %}

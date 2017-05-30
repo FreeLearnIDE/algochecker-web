@@ -1,0 +1,63 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_group_access', args=[group.id]) }}">Access control</a></li>
+        <li class="active">Confirm csv import</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <p>Please pick users who you would like to add to the group <strong>{{ group.name }}</strong>:</p>
+
+    <form action="{{ url('staff_access_csv_import', args=[group.id]) }}" method="POST">
+    {{ csrf_input }}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Add?</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Provider ID</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr{% if user.exists %} class="text-muted"{% endif %}>
+                <td>
+                    <input type="checkbox" class="user-adder" name="user[{{ loop.index0 }}][add]"{% if user.exists %} disabled="disabled" checked{% endif %}>
+                </td>
+                <td>
+                    <input type="hidden" name="user[{{ loop.index0 }}][first_name]" value="{{ user.first_name }}">
+                    {{ user.first_name|short_name }}
+                </td>
+                <td>
+                    <input type="hidden" name="user[{{ loop.index0 }}][last_name]" value="{{ user.last_name }}">
+                    {{ user.last_name }}
+                </td>
+                <td>
+                    <input type="hidden" name="user[{{ loop.index0 }}][provider_id]" value="{{ user.provider_id }}">
+                    {{ user.provider_id }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+
+    <p>Grey fields denote already imported users.</p>
+    <button type="button" class="btn btn-link select-toggle" data-select="true"><span class="glyphicon glyphicon-check"></span> Select all</button>
+    <button type="button" class="btn btn-link select-toggle" data-select="false"><span class="glyphicon glyphicon-unchecked"></span> Deselect all</button>
+    <hr class="small-margin">
+    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add selected</button>
+    <a href="{{ url('staff_group_access', args=[group.id]) }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Cancel</a>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ static("webapp/js/admin/group_access_csv_import.js") }}"></script>
+{% endblock %}

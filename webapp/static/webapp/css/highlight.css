@@ -1,0 +1,121 @@
+.highlight .hll, .highlight-no-lines .hll { background-color: #ffffcc }
+.highlight,     .highlight-no-lines  { background: #f8f8f8; }
+.highlight .c , .highlight-no-lines .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err, .highlight-no-lines .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k , .highlight-no-lines .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o , .highlight-no-lines .o { color: #666666 } /* Operator */
+.highlight .ch, .highlight-no-lines .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm, .highlight-no-lines .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp, .highlight-no-lines .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf, .highlight-no-lines .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1, .highlight-no-lines .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs, .highlight-no-lines .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd, .highlight-no-lines .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge, .highlight-no-lines .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr, .highlight-no-lines .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh, .highlight-no-lines .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi, .highlight-no-lines .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go, .highlight-no-lines .go { color: #888888 } /* Generic.Output */
+.highlight .gp, .highlight-no-lines .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs, .highlight-no-lines .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu, .highlight-no-lines .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt, .highlight-no-lines .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc, .highlight-no-lines .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd, .highlight-no-lines .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn, .highlight-no-lines .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp, .highlight-no-lines .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr, .highlight-no-lines .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt, .highlight-no-lines .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m , .highlight-no-lines .m { color: #666666 } /* Literal.Number */
+.highlight .s , .highlight-no-lines .s { color: #BA2121 } /* Literal.String */
+.highlight .na, .highlight-no-lines .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb, .highlight-no-lines .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc, .highlight-no-lines .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no, .highlight-no-lines .no { color: #880000 } /* Name.Constant */
+.highlight .nd, .highlight-no-lines .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni, .highlight-no-lines .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne, .highlight-no-lines .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf, .highlight-no-lines .nf { color: #0000FF } /* Name.Function */
+.highlight .nl, .highlight-no-lines .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn, .highlight-no-lines .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt, .highlight-no-lines .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv, .highlight-no-lines .nv { color: #19177C } /* Name.Variable */
+.highlight .ow, .highlight-no-lines .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w , .highlight-no-lines .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb, .highlight-no-lines .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf, .highlight-no-lines .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh, .highlight-no-lines .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi, .highlight-no-lines .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo, .highlight-no-lines .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb, .highlight-no-lines .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc, .highlight-no-lines .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd, .highlight-no-lines .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2, .highlight-no-lines .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se, .highlight-no-lines .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh, .highlight-no-lines .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si, .highlight-no-lines .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx, .highlight-no-lines .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr, .highlight-no-lines .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1, .highlight-no-lines .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss, .highlight-no-lines .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp, .highlight-no-lines .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc, .highlight-no-lines .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg, .highlight-no-lines .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi, .highlight-no-lines .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il, .highlight-no-lines .il { color: #666666 } /* Literal.Number.Integer.Long */
+
+
+/* override bootstrap pre styles */
+.highlight pre {
+    padding: 0;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.highlight-no-lines pre { line-height: 125% }
+
+
+/* code lines styling */
+
+.highlight table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.highlight table td {
+    line-height: 1.4em;
+    margin: 0;
+}
+
+.highlight .lines-gutter {
+    width: 1em;
+}
+
+.highlight .l-num {
+    text-align: right;
+    cursor: default;
+    color: #aaa;
+    padding: 0 .6em;
+    border-right: 2px solid #ddd;
+}
+
+.highlight .l-code {
+    padding: 0 1em 0 1.2em;
+}
+
+.highlight .l-code.hover,
+.highlight .l-num.hover {
+    background: #f9f9f9;
+}
+
+/* first and last lines padding */
+
+.highlight .l-code.first,
+.highlight .l-num.first {
+    padding-top: 5px;
+}
+.highlight .l-code:last-child,
+.highlight .l-num:last-child {
+    padding-bottom: 5px;
+}

@@ -1,0 +1,114 @@
+{% extends "webapp/_layout_narrow.html" %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{{ url('index') }}">Home</a></li>
+    <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+    <li class="active">{{ group.name|truncate(35) }}</li>
+</ol>
+{% endblock %}
+
+{% block body %}
+    <h3>Task group &laquo;{{ group.name }}&raquo;{% if group.archived %}<small> — archived</small>{% endif %}</h3>
+    {% if group.description %}
+        {{ group.description|linebreaksbr }}
+    {% endif %}
+    <hr>
+    <div class="btn-margin">
+        <a href="{{ url('staff_group_access', args=[group.id]) }}" class="btn btn-sm btn-primary"><span
+                class="glyphicon glyphicon-briefcase"></span> Access control</a>
+    </div>
+    {% if not group.archived %}
+        <div class="btn-margin">
+            <a href="{{ url('staff_group_set_create', args=[group.id]) }}" class="btn btn-sm btn-success"><span
+                    class="glyphicon glyphicon-plus"></span> Create set</a>
+        </div>
+        <div class="btn-margin">
+            <a href="{{ url('staff_group_archive', args=[group.id]) }}" class="btn btn-sm btn-default"><span
+                    class="glyphicon glyphicon-trash"></span> Archive group</a>
+        </div>
+        <div class="btn-margin">
+            <a href="{{ url('staff_group_edit', args=[group.id]) }}" class="btn btn-sm btn-default"><span
+                    class="glyphicon glyphicon-edit"></span> Edit group</a>
+        </div>
+        {% if sets %}
+            <div class="btn-margin">
+                <a href="{{ url('staff_group_deadlines', args=[group.id]) }}" class="btn btn-sm btn-default"><span
+                        class="glyphicon glyphicon-time"></span> Bulk deadlines</a>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="btn-margin">
+            <a href="{{ url('staff_group_archive', args=[group.id]) }}" class="btn btn-sm btn-warning"><span
+                    class="glyphicon glyphicon-level-up"></span> Restore group</a>
+        </div>
+    {% endif %}
+    <div class="btn-margin">
+        <a href="{{ url('staff_group_copy', args=[group.id]) }}" class="btn btn-sm btn-default"><span
+                class="glyphicon glyphicon-copy"></span> Copy group</a>
+    </div>
+    <div class="clearfix"></div>
+    <hr>
+
+    {% for set in sets %}
+        <div class="panel panel-default dashboard-panel-group">
+            <div class="panel-heading">
+                <h4 class="panel-title">{{ set.name|truncate(40) }}
+                    <small>— set of tasks</small>
+                </h4>
+            </div>
+            <div class="list-group">
+                {% for task in set.tasks %}
+                    <a href="{{ url('staff_task_details', args=[task.id]) }}" class="list-group-item">
+                        {% if task.archived %}
+                            <span class="label label-default task-label pull-right">archived</span>
+                        {% endif %}
+                        {% if not task.published %}
+                            <span class="label label-danger task-label pull-right">unpublished</span>
+                        {% endif %}
+                        {{ task.get_deadline_label }}
+                        <p class="list-group-item-text truncate">
+                            {{ task.name }}
+                        </p>
+                    </a>
+                {% else %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-text alert alert-info">
+                            <span class="glyphicon glyphicon-info-sign"></span> There are no tasks in the set
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if set.description %}
+                <div class="panel-body">
+                    <b>Description</b>
+                    <hr class="small-margin">
+                    {{ set.description|linebreaksbr }}
+                </div>
+            {% endif %}
+            {% if not group.archived %}
+                <div class="panel-footer">
+                    <a href="{{ url('staff_task_create', args=[group.id, set.id]) }}"
+                       class="btn btn-xs btn-success"><span class="glyphicon glyphicon-plus"></span> Create task</a>
+                    <a href="{{ url('staff_group_set_edit', args=[group.id, set.id]) }}"
+                       class="btn btn-xs btn-default"><span class="glyphicon glyphicon-edit"></span> Edit set</a>
+                    {% if set.has_unpublished %}
+                        <a href="{{ url('staff_group_set_publish', args=[group.id, set.id]) }}"
+                           class="btn btn-xs btn-default"><span class="glyphicon glyphicon-bullhorn"></span>
+                            Publish all tasks</a>
+                    {% endif %}
+                    {% if not set.tasks %}
+                        <a href="{{ url('staff_group_set_remove', args=[group.id, set.id]) }}"
+                           class="btn btn-xs btn-default pull-right"><span class="glyphicon glyphicon-trash"></span>
+                            Delete set</a>
+                    {% endif %}
+                    <div class="clearfix"></div>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="list-group-item-text alert alert-info">
+            <span class="glyphicon glyphicon-info-sign"></span> There are no sets in the group
+        </div>
+    {% endfor %}
+{% endblock %}

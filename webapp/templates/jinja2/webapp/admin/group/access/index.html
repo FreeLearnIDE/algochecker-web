@@ -1,0 +1,119 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li class="active">Access control</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <h3 class="text-center">Access control for &laquo;{{ group.name }}&raquo;</h3>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Staff <label class="badge">{{ access_staff|length }}</label><a href="{{ url('staff_group_access_staff', args=[group.id]) }}" class="btn btn-xs pull-right btn-default"><span class="glyphicon glyphicon-plus"></span> add</a></h4>
+            {% if access_staff %}
+                <div class="table-responsive">
+                    <table class="table table-condensed table-access">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Role</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff in access_staff %}
+                            {% if staff.user %} {# if staff - user is always assigned. but its better to check #}
+                                <tr>
+                                    <td>
+                                        <span class="glyphicon glyphicon-{{ 'king' if staff.role == 'owner' else 'knight' }}"></span> <a href="{{ url('staff_group_user_reports', args=[group.id, staff.user.id]) }}">{{ staff.user.first_name|short_name }} {{ staff.user.last_name }}</a> <small>({{ staff.user.username }}){% if staff.user == request.user %}<span class="text-muted"> – you{% endif %}</span></small>
+                                    </td>
+                                    <td class="text-center">{{ staff.role }}</td>
+                                    <td class="text-right">
+                                        {% if staff.role != 'owner' and staff.role != 'dev' %}
+                                            <a class="btn btn-xs btn-default" href="{{ url('staff_group_revoke_user_access', args=[group.id, 'user', staff.user.id]) }}">
+                                                <span class="glyphicon glyphicon-paste"></span> revoke access
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <h4>Global access</h4>
+            <p class="text-justify">
+                {% if group.is_public %}
+                    <span class="glyphicon glyphicon-eye-open"></span>
+                    This group is publicly accessible: every user registered in the system has an access to the every published task in the group unless archived.</p><p>
+                    {% if group.archived %}
+                        In order make the group private you have to unarchive it.
+                    {% else %}
+                        You always can
+                        <a class="text-warning" href="{{ url('staff_group_change_access', args=[group.id]) }}">make it private</a>
+                    {% endif %}
+                {% else %}
+                    <span class="glyphicon glyphicon-eye-close"></span>
+                    This group has restricted access. Only users who were granted permissions are able to view published tasks and make submissions unless group/task is archived or deadline is reached.</p><p>
+                    {% if group.archived %}
+                        In order to make the group public you have to unarchive it.
+                    {% else %}
+                        You always can
+                        <a class="text-success" href="{{ url('staff_group_change_access', args=[group.id]) }}">make it public</a>
+                    {% endif %}
+                {% endif %}
+            </p>
+            {% if invitations_count %}
+                <h4>Invitations</h4>
+                <p>There {{ ('are <b>{}</b> invitations' if invitations_count > 1 else 'is <b>{}</b> invitation').format(invitations_count)|safe }} for this group. Full list is available <a href="{{ url('staff_group_invitation_list', args=[group.id]) }}">here</a>.</p>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            {% if not group.is_public %}
+                <h4>Users <label class="badge">{{ access_user|length }}</label><a href="{{ url('staff_group_access_user', args=[group.id]) }}" class="btn btn-xs pull-right btn-default"><span class="glyphicon glyphicon-plus"></span> add</a></h4>
+                {% if access_user %}
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-access">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th class="text-center">Provider ID</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in access_user %}
+                                <tr>
+                                    <td>
+                                        {% if user.user %}
+                                            <abbr title="user has logged in" data-toggle="tooltip"><span class="glyphicon glyphicon-ok"></span></abbr> <a href="{{ url('staff_group_user_reports', args=[group.id, user.user.id]) }}">{{ user.user.first_name|short_name }} {{ user.user.last_name }} <small>({{ user.user.username }})</small></a>
+                                        {% else %}
+                                            <abbr title="user has not logged in yet" data-toggle="tooltip"><span class="glyphicon glyphicon-hourglass"></span></abbr> {{ '{} {}'.format(user.provider_first_name, user.provider_last_name) if user.provider_first_name and user.provider_last_name else ('<span class="text-muted">not assigned</span>'|safe) }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ user.provider_id }}</td>
+                                    <td class="text-right">
+                                        <a class="btn btn-xs btn-default" href="{{ url('staff_group_revoke_user_access', args=[group.id, 'user' if user.user else 'provider', user.user.id if user.user else user.provider_id]) }}">
+                                            <span class="glyphicon glyphicon-paste"></span> revoke access
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr class="text-muted text-center"><td colspan="4">There are no users with access</td></tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p></p><p class="text-center text-muted">There are no users with access</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

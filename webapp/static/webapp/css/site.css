@@ -1,0 +1,169 @@
+/* spin, half-spin animations */
+.gl-spin {
+    animation: spin 2s infinite linear;
+}
+
+.gl-half-spin {
+    animation: half-spin 4s infinite linear;
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes half-spin {
+  0%, 100% {
+    -webkit-transform: rotate(-20deg);
+    transform: rotate(-20deg);
+  }
+  50% {
+    -webkit-transform: rotate(200deg);
+    transform: rotate(200deg);
+  }
+}
+
+.jmb-index {
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45));
+}
+
+.jmb-index .container {
+    color: #fff;
+}
+
+/* markdown headers restyle */
+.markdown-description h1 { font-size: 18px; }
+.markdown-description h2 { font-size: 17px; }
+.markdown-description h3 { font-size: 16px; }
+.markdown-description h4 { font-size: 15px; }
+.markdown-description h5 { font-size: 14px; }
+.markdown-description h6 { font-size: 13px; }
+
+/* footer */
+ul#footer-links {
+    margin: 0;
+    padding: 0 0 10px 0;
+    text-align: center;
+    list-style: none;
+    font-size: 12px;
+
+}
+ul#footer-links li {
+    display: inline-block;
+    padding: 0 4px;
+    color: #777;
+}
+ul#footer-links li a {
+    color: #777;
+}
+
+/* other */
+hr.small-margin
+{
+    margin: 7px 0 !important;
+}
+
+.progress {
+    margin-bottom: 0;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+h4.truncate {
+    line-height: 1.2em;
+}
+
+abbr[title] {
+    text-decoration: none !important;
+}
+
+.admin-task-list .list-group-item-heading {
+    margin-bottom: 0;
+}
+
+.star-required { color: #c00; }
+
+.big-alert-title {
+    font-weight: bold;
+    font-size: 16px;
+    padding-bottom: 7px;
+}
+
+.evaluations-table tr {
+    height: 39px;
+}
+
+.nav-tabs-margin {
+    margin-bottom: 15px;
+}
+
+.hl-wrap {
+    margin-bottom: 15px;
+}
+
+.dashboard-panel-group {
+    position: relative;
+}
+
+.group-panel-edit {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.task-label {
+    margin-top: 1px;
+    margin-left: 2px;
+}
+
+.task-group-divider { margin: 15px 0; }
+
+.hresize-vertical { resize: vertical; }
+
+.text-default { }
+
+#dashboard-archived-info { margin: 30px 0 0 0; }
+
+#dashboard-archived-groups-wrap { margin: 30px 0 0 0; }
+
+#task_form textarea#id_description { font-family: monospace; }
+
+.table-access { margin-bottom: 0; }
+
+.btn-margin {
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+p.pb-10 { padding-bottom: 10px; }
+
+
+.justify-p p { text-align: justify; }
+.justify-p p.text-center { text-align: center; }
+
+#bulk-prog-bar {
+    min-width: 3em;
+    width: 3%;
+}
+
+#feedback-form {
+    padding-top: 10px;
+}
+
+.accepted-icon { font-size: 14px; }
+
+#MathJax_Message { display: none !important;}
+
+.task-set-label {
+    font-size: 20px;
+}

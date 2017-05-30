@@ -1,0 +1,36 @@
+{% extends "webapp/_layout_narrow.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li class="active">Staff dashboard</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group">
+            <a href="{{ url('staff_group_create') }}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"></span> Create group</a>
+        </div>
+    </div>
+    <h3>Task groups</h3>
+    <hr>
+    <div class="clearfix"></div>
+    {% include 'webapp/admin/_dashboard_groups.html' %}
+    {% if archived_items %}
+        <div id="dashboard-archived-info">
+            <p class="text-muted text-center">
+                <span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;There {{ ('is <b>{}</b> archived group' if archived_items|length < 2 else 'are <b>{}</b> archived groups').format(archived_items|length)|safe }}.
+                <a href="#" id="archived-handler">Show</a>
+            </p>
+        </div>
+        <div id="dashboard-archived-groups-wrap" class="hidden">
+            {% set items = archived_items %}
+            {% include 'webapp/admin/_dashboard_groups.html' %}
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}<script src="{{ static("webapp/js/admin/dashboard.js") }}"></script>
+{% endblock %}

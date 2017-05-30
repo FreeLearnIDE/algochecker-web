@@ -1,0 +1,18 @@
+{%- macro print_error(caption, message) -%}
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-xs-12 col-xs-offset-0">
+            <div class="alert alert-danger">
+                <div class="big-alert-title">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    {{ caption }}
+                </div>
+
+                <p>
+                    {{ message|safe }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+{%- endmacro -%}

@@ -1,0 +1,192 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{{ url('index') }}">Home</a></li>
+    <li><a href="{{ url('tasks') }}">Tasks</a></li>
+    <li><a href="{{ url('task', args=[submission.task_id]) }}">{{ submission.task.task_group.name|truncate(35) }}: {{ submission.task.name|truncate(35) }}</a></li>
+    <li class="active">Report</li>
+</ol>
+{% endblock %}
+
+{% block body %}
+
+    {% if user and from_staff %}
+        <h3 class="text-center">Report on &laquo;{{ submission.task.name }}&raquo; by {{ user.first_name|short_name }} {{ user.last_name }}</h3>
+        <hr>
+    {% endif %}
+
+    {% if evaluation and evaluation.is_invalid %}
+        <div class="alert alert-danger">
+            <div class="big-alert-title">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                Invalidation notice
+            </div>
+            <p>
+                This submission was invalidated by {{ evaluation.invalidated_by.first_name|short_name }} {{ evaluation.invalidated_by.last_name }} (staff)
+                on {{ evaluation.invalidated_at|fltime }}.
+            </p>
+            <p>
+                <b>Comment from the staff:</b><br>
+                {{ evaluation.invalidation_comment|linebreaksbr }}
+            </p>
+            {% if from_staff %}
+                <hr class="small-margin">
+                <p>
+                    <span class="text-success glyphicon glyphicon-ok-circle"></span>&nbsp;You can
+                    <a href="{{ url('staff_submission_validate', args=[submission.uuid]) }}" class="text-success">restore validity</a> of this submission.
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if submission.reevaluated %}
+        <div class="alert alert-warning">
+            <div class="big-alert-title">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                Re-evaluation notice
+            </div>
+            <p>
+                This submission is a copy of another submission which was sent on <a href="{{ url('staff_submission_report' if from_staff else 'view_report', args=[submission.copy_of_id]) }}">{{ submission.copy_of.submitted|fltime }}</a>.
+            </p>
+            <p>
+                {{ submission.invoked_by.first_name|short_name }} {{ submission.invoked_by.last_name }} (staff) manually caused that submission to be re-evaluated. This report is the result of the re-evaluation.
+            </p>
+        </div>
+    {% endif %}
+
+    {% if not evaluation %}
+        <div class="alert alert-info">
+            <div class="big-alert-title">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                Awaiting evaluation
+            </div>
+            <p>
+                This submission has not been evaluated yet. Hence there is no evaluation of the submission.<br>
+                Submission was received on {{ submission.submitted|fltime }}
+            </p>
+        </div>
+    {% else %}
+        <p><b>Submitted on</b> {{ submission.submitted|fltime }}</p>
+        <p><b>Checked on</b> {{ evaluation.received|fltime }}</p>
+        {% if evaluation.worker_took_time %}
+            {% set check_time =  (evaluation.received.timestamp() - evaluation.worker_took_time / 1000 - submission.submitted.timestamp())|round|int %}
+            <p><b>In queue time</b> &asymp; {{ check_time|format_int_time }}</p>
+            <p><b>Check time</b> &asymp;
+                {% if evaluation.worker_took_time // 1000 == 0 %}
+                    {{ evaluation.worker_took_time }} milliseconds
+                {% else %}
+                    {{ evaluation.worker_took_time // 1000 }} second{{ 's' if evaluation.worker_took_time // 1000 > 1 else '' }}</p>
+                {% endif %}
+        {% endif %}
+        <p><b>Status:</b> {% if evaluation.status == 'ok' %}evaluated{% else %}{{ evaluation.view_info.status }} &rarr; rejected{% endif %}</p>
+        {% if evaluation.score is not none %}
+            <p><b>Score:</b> {{ evaluation.score }}%</p>
+        {% endif %}
+        {% if tests|length %}
+            <hr>
+            <h4>Tests</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th width="20%">Name</th>
+                            <th width="20%">Status</th>
+                            <th width="20%">Points <small class="text-muted">received/max</small></th>
+                            <th width="20%">Time <small class="text-muted">ms</small></th>
+                            <th width="20%">Memory <small class="text-muted">MB</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in tests %}
+                            <tr>
+                                <td>{{ test.name }}</td>
+                                <td class="text-{{ test.tpl_data.status_color }}">
+                                    <abbr title="{{ test.tpl_data.status_info }}" data-toggle="tooltip" data-placement="top">
+                                        {{ test.status.replace ("_", " ") }}
+                                    </abbr>
+                                </td>
+                                <td>
+                                    {{ test.points|round(2) }} / {{ test.max_points|round(2) }}
+                                </td>
+                                <td class="text-{{ test.tpl_data.time_color|default('default') }}">
+                                    {{ test.tpl_time }}
+                                </td>
+                                <td class="text-{{ test.tpl_data.memory_color|default('default') }}">
+                                    {{ '%0.3f' % (test.memory / 1024 / 1024) if test.memory else 'n/a' }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        {% if evaluation.message and evaluation.status == 'internal_error' %}
+            <hr>
+            <h4>Error trace:</h4>
+            {% if request.user.is_staff %}
+                <pre>{{ evaluation.message }}</pre>
+            {% else %}
+                <div class="alert alert-danger">Error trace is visible only to staff members.</div>
+            {% endif %}
+        {% elif evaluation.message %}
+            <hr>
+            <h4>Message:</h4>
+            <pre>{{ evaluation.message }}</pre>
+        {% endif %}
+        {% if from_staff and not evaluation.is_invalid %}
+            <hr>
+            <h4>Invalid submission</h4>
+            <p>
+                <span class="text-danger glyphicon glyphicon-ban-circle"></span>&nbsp;If you are noticing that this submission
+                violates some of the rules or regulations, you can
+                <a href="{{ url('staff_submission_invalidate', args=[submission.uuid]) }}" class="text-danger">make it invalid</a>.
+            </p>
+        {% endif %}
+        {% if tests|length %}
+            {% for test in tests if test.output is not none and (test.output_visibility == 'public' or from_staff) %}
+                {% if loop.index0 == 0 %}
+                    <hr>
+                    <h4>Program output</h4>
+                {% endif %}
+                <p>{{ test.name }}:</p>
+                <pre>{{ test.output }}</pre>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+    <hr>
+    <h4 id="report-files">File{% if files|length > 1 %}s{% endif %} submitted:</h4>
+    {% if files|length > 1 %}
+        <h5>Jump to:</h5>
+        <ol>
+            {% for file in files %}
+                <li><a href="#file-{{ file.id }}">{{ file.name }}</a></li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+    {% for file in files %}
+        <p>
+            <strong id="file-{{ file.id }}">{% if files|length > 1 %}{{ loop.index }}. {% endif %}{{ file.name }}</strong>
+            {% if loop.index != 1 %}<a class="pull-right" href="#report-files"><small>Jump to top &uarr;</small></a>{% endif %}
+            {% if code[file.id] %}<small class="text-muted">({{ code[file.id].lang }})</small>{% endif %}
+        </p>
+
+        {% if code[file.id] %}
+            <div class="hl-wrap" id="hl-{{ file.id }}">
+                {{ code[file.id].html|safe }}
+            </div>
+        {% else %}
+            <p><span class="text-muted">(binary file not highlighted)</span></p>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ static("webapp/css/highlight.css") }}" />
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ static("webapp/js/page/report.js") }}"></script>
+{% endblock %}

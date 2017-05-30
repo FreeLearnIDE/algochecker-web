@@ -1,0 +1,122 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li class="active">{{ task.name|truncate(35) }}</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <h3 class="text-center">Task &laquo;{{ task.name }}&raquo;</h3>
+    <hr>
+    {% if task.archived or group.archived %}
+        <div class="alert alert-warning" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span>
+            {% if group.archived %}
+                The group, to which this task belongs is archived.
+                In order to be able to edit this task you have to unarchive the group.
+            {% else %}
+                This task is archived.
+                You always can
+                <a href="{{ url('staff_task_archive', args=[task.id]) }}">restore it</a>
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if not task.published %}
+        <div class="alert alert-warning" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span> This task is unpublished. <b>It is not listed nor accessible for users.</b>
+            {% if group.archived %}
+                You will be able to publish it only when the group to which this task belongs will be unarchived.
+            {% else %}
+                You can <a href="{{ url('staff_task_publish', args=[task.id]) }}">publish it now</a>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <h4>Summary</h4>
+            <ul class="list-unstyled">
+                <li><b>Owner:</b> {{ task.owner.first_name|short_name }} {{ task.owner.last_name }} <small>({{ task.owner.username }})</small></li>
+                {% from "webapp/macro/task_deadline.html" import task_deadline %}
+                {% if task.deadline %}<li>{{ task_deadline(task, 'default', True) }}</li>{% endif %}
+                </ul>
+            {% if are_results %}
+                <h4>Average performance</h4>
+                <ul class="list-unstyled">
+                    {% if stats.avg_check_time != 'n/a' %}<li>Check time: &asymp; {{ stats.avg_check_time }}</li>{% endif %}
+                    {% if stats.avg_wait_time != 'n/a' %}<li>Time in queue: &asymp; {{ stats.avg_wait_time }}</li>{% endif %}
+                    {% if stats.sbm_count %}
+                        <li>Score: {{ stats.avg_score|round(1) }}% <small class="text-muted">over {{ task.result_type.title()|lower }} results from users</small></li>
+                    {% else %}
+                        <li class="text-muted">More statistics will be available when there will be submissions from users</li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <h4>Actions</h4>
+            <div class="btn-margin">
+                <a href="{{ url('task', args=[task.id]) }}" target="_blank" class="btn btn-sm btn-default">
+                    <span class="glyphicon glyphicon-new-window"></span>&nbsp;Go to task
+                </a>
+            </div>
+            <div class="btn-margin">
+                <a href="{{ url('staff_task_submissions_all', args=[task.id]) }}" class="btn btn-sm btn-default">
+                    <span class="glyphicon glyphicon-list-alt"></span>&nbsp;All submissions
+                </a>
+            </div>
+            <div class="btn-margin">
+                <a href="{{ pack_url }}" class="btn btn-sm btn-default">
+                    <span class="glyphicon glyphicon-link"></span>&nbsp;Get package
+                </a>
+            </div>
+            {% if not task.archived and not group.archived %}
+                <div class="btn-margin">
+                    <a href="{{ url('staff_task_edit', args=[task.id]) }}" class="btn btn-sm btn-default">
+                        <span class="glyphicon glyphicon-edit"></span>&nbsp;Edit task
+                    </a>
+                </div>
+                <div class="btn-margin">
+                    <a href="{{ url('staff_task_archive', args=[task.id]) }}" class="btn btn-sm btn-danger">
+                        <span class="glyphicon glyphicon-trash"></span>&nbsp;Archive task
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            {% if not are_results %}
+                <span class="visible-sm visible-xs"><br></span>
+                <div class="alert alert-info">
+                    <span class="glyphicon glyphicon-info-sign"></span> No submissions were made to this task
+                </div>
+            {% else %}
+                <h4>Results <label class="badge">{{ stats.sbm_count }}</label> <small>showing {{ task.result_type.title()|lower }} per user</small></h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th width="35%">User name</th>
+                            <th width="15%">{{ task.result_type.title() }} score</th>
+                            <th width="25%">Submit time</th>
+                            <th width="15%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set results = d_results %}
+                        {% include 'webapp/admin/task/_result_row.html' %}
+                        {% set results = s_results %}
+                        {% set _flag = true %}
+                        {% include 'webapp/admin/task/_result_row.html' %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

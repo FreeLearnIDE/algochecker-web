@@ -1,0 +1,16 @@
+{% extends "webapp/_layout.html" %}
+
+{% block title %}403 Forbidden | {% endblock %}
+
+{% block body %}
+
+    {% from "webapp/macro/error.html" import print_error %}
+
+    {{
+        print_error(
+            '403. Forbidden',
+            'You do not have an access to this page or directory.<br>You can go to <a href="/">index page</a> instead.'
+            )
+    }}
+
+{% endblock %}

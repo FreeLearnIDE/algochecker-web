@@ -1,0 +1,123 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+         <li><a href="{{ url('index') }}">Home</a></li>
+         <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+         <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+         <li><a href="{{ url('staff_task_details', args=[task.id]) }}">{{ task.name|truncate(35) }}</a></li>
+         <li class="active">All submissions</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <h3 class="text-center">Submissions to the &laquo;{{ task.name }}&raquo;</h3>
+    <hr>
+    {% if evaluations %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <div class="btn-margin"><button data-action='{"action": "select_all", "args": []}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-check"></span> select all</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select_all", "args": [false]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-unchecked"></span> deselect all</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select", "args": ["best"]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-thumbs-up"></span> select best</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select", "args": ["latest"]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-time"></span> select latest</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select", "args": ["invalid"]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-ban-circle"></span> select invalid</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select", "args": ["invalid", false]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-ban-circle"></span> deselect invalid</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select", "args": ["internal_error"]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-warning-sign"></span> select internal error</button></div>
+            <div class="btn-margin"><button data-action='{"action": "select", "args": ["compile_error"]}' class="btn btn-xs btn-default select-trigger"><span class="glyphicon glyphicon-exclamation-sign"></span> select compilation fail</button></div>
+
+            <br>
+
+            <div class="btn-margin"><button data-action='{"action": "submit", "args": ["reevaluate"]}' class="btn btn-sm btn-primary submit-trigger">
+                <span class="glyphicon glyphicon-repeat"></span>&nbsp;Re-evaluate selected
+            </button></div>
+            <div class="btn-margin"><button data-action='{"action": "submit", "args": ["invalidate"]}' class="btn btn-sm btn-danger submit-trigger">
+                <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;Mark selected as invalid
+            </button></div>
+            <div class="btn-margin"><button data-action='{"action": "submit", "args": ["validate"]}' class="btn btn-sm btn-success submit-trigger">
+                <span class="glyphicon glyphicon-ok-circle"></span>&nbsp;Mark selected as valid
+            </button></div>
+
+            <p class="text-muted"><small>You can use <code>shift</code> key when clicking on the checkbox in order to select multiple submissions at once.</small></p>
+        </div>
+    </div>
+    <hr class="small-margin">
+    {% endif %}
+    <div class="row">
+        <div class="col-xs-12">
+
+    {% if not evaluations %}
+        <div class="alert alert-info text-center" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span> No submissions received
+        </div>
+    {% else %}
+        <form action="{{ url('staff_task_submissions_all', args=[task.id]) }}" method="POST" id="action_form">
+        {{ csrf_input }}
+        <input type="hidden" name="action" value="none" id="action_input">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="3%"><span class="glyphicon glyphicon-check"></span></th>
+                        <th width="22%">Submit time</th>
+                        <th width="25%">Submitted by</th>
+                        <th width="25%">Status</th>
+                        <th width="10%">Score</th>
+                        <th width="15%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for evaluation in evaluations %}
+                    {% with submission = evaluation.submission %}
+                        <tr class="tr-handler{% if evaluation.is_invalid %} danger{% endif %}"
+                                data-best="{{ 'true' if evaluation.best == 1 else 'false' }}"
+                                data-latest="{{ 'true' if evaluation.latest == 1 else 'false' }}"
+                                data-invalid="{{ evaluation.is_invalid|lower }}"
+                                data-internal_error="{{ 'true' if evaluation.status == 'internal_error' else 'false' }}"
+                                data-compile_error="{{ 'true' if evaluation.status == 'compile_error' else 'false' }}">
+                            <td><input type="checkbox" class="checkbox-handler" name="submission[{{ loop.index0 }}][uuid]" value="{{ submission.uuid }}"></td>
+                            <td>{{ submission.submitted|fltime }}</td>
+                            <td><a href="{{ url('staff_group_user_reports', args=[group.id, submission.user_id]) }}">{{ submission.user.first_name|short_name }} {{ submission.user.last_name }} <small>({{ submission.user.username }})</small></a></td>
+                            <td>
+                                {% if evaluation.status == 'ok' %}
+                                    <span class="label label-success">
+                                        <span class="glyphicon glyphicon-ok"></span> evaluated
+                                    </span>
+                                {% else %}
+                                    <span class="label label-danger">
+                                        <span class="glyphicon glyphicon-exclamation-sign"></span> rejected
+                                    </span>&nbsp;
+                                    {% if evaluation.view_info.status %}
+                                        <span class="glyphicon glyphicon-chevron-right"></span>&nbsp;
+                                        <span class="label label-warning">{{ evaluation.view_info.status }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if evaluation.score is not none %}
+                                    {% if evaluation.is_invalid %}<del class="text-{{ evaluation.view_info.color }}">{% endif %}
+                                        <span class="text-{{ evaluation.view_info.color }}">{{ evaluation.score }}%</span>
+                                    {% if evaluation.is_invalid %}</del>{% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                <a href="{{ url('staff_submission_report', args=[submission.uuid]) }}" class="btn btn-xs btn-default view-report"><span class="glyphicon glyphicon-list-alt"></span> View report</a>
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </form>
+    {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{ static("webapp/js/admin/task_submissions_all.js") }}"></script>
+{% endblock %}

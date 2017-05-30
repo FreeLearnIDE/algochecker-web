@@ -1,0 +1,47 @@
+{% extends "webapp/admin/_confirm_page.html" %}
+
+{% set color_scheme = 'success' %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li>
+            <a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a>
+        </li>
+        {% if not bulk %}
+            <li><a href="{{ url('staff_task_details', args=[task.id]) }}">{{ task.name|truncate(35) }}</a></li>
+            <li class="active">Publish</li>
+        {% else %}
+            <li class="active">set {{ set_name|truncate(30) }}: Bulk publish</li>
+        {% endif %}
+    </ol>
+{% endblock %}
+
+{% block action_title %}
+You are about to publish {% if bulk %}all tasks in the set{% else %}&laquo;{{ task.name }}&raquo;{% endif %}
+{% endblock %}
+
+{% block action_text %}
+    {% if bulk %}
+        <h5 class="text-center">Tasks to be affected</h5>
+        <ul>
+            {% for task in tasks %}
+                <li>{{ task.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <h5 class="text-center">Consequences for users:</h5>
+    <ul>
+        <li>{% if bulk %}each{% else %}the{% endif %} task will appear in the group in the list of tasks</li>
+        <li>submissions will be accepted according to preset settings</li>
+        <li>all of mentioned above applies only if {% if bulk %}particular{% else %}the{% endif %} task is not archived</li>
+    </ul>
+    <p class="text-muted text-center">
+        <small>
+            Please note that this action is irreversible. Once the task is published it can only be archived.<br>
+            Archived tasks will be accessible to subscribed users by a direct (brute forcible) link.<br>
+            Be aware of any sensible information {% if bulk %}those tasks{% else %}this task{% endif %} may contain in the description.
+        </small>
+    </p>
+{% endblock %}

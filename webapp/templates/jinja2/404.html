@@ -1,0 +1,16 @@
+{% extends "webapp/_layout.html" %}
+
+{% block title %}404 Not Found | {% endblock %}
+
+{% block body %}
+
+    {% from "webapp/macro/error.html" import print_error %}
+
+    {{
+        print_error(
+            '404. Page Not Found',
+            'The page your are looking for cannot be found.<br>Try to check the url or go to the <a href="/">index page</a>.'
+            )
+    }}
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li><a href="{{ url('staff_group_access', args=[group.id]) }}">Access control</a></li>
+        <li class="active">Add {{ type }} access</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    {% from "webapp/macro/forms.html" import h_form_fields, h_action_buttons %}
+    <h3 class="text-center">Add {{ type }} access for &laquo;{{ group.name }}&raquo;</h3>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0 col-md-8 col-md-offset-2 text-center">
+            {% if type == 'user' %}
+                <h4>Bulk import</h4>
+                <p class="pb-10">You can import from a .csv file:</p>
+                <form class="form-inline" enctype="multipart/form-data" action="{{ url('staff_group_access_{}'.format(type), args=[group.id]) }}" method="POST">{#  #}
+                    {{ csrf_input }}
+                    {{ csv_form.upload_csv }}
+                    <div class="form-group form-group-sm">
+                        {{ csv_form.file }}
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <button type="submit" name="submit" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-import"></span> Import</button>
+                    </div>
+                </form><br>
+                <p><small class="help-block">Note: Imported file is not stored anywhere and only provider ID and name-related columns are extracted.</small></p>
+                <p><small class="help-block">Users who are not registered in the system at this moment will be granted permissions automatically once registered.</small></p>
+                <p><small class="help-block">After clicking "Import" you will be asked to select users who will be granted an access.</small></p>
+                <hr>
+                <h4>Single import</h4>
+            {% endif %}
+
+            <p class="pb-10">Here you can type username to grant one's {{ type }} access:</p>
+            <form class="form-inline" action="{{ url('staff_group_access_{}'.format(type), args=[group.id]) }}" method="POST">
+                {{ csrf_input }}
+                {{ grant_single_form.grant_single }}
+                <div class="form-group form-group-sm">
+                    {{ grant_single_form.username }}
+                </div>
+                <div class="form-group form-group-sm">
+                    <button type="submit" name="submit" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-ok"></span> Grant</button>
+                </div>
+            </form><br>
+            <p><small class="help-block">Only registered in the system users can be granted an access through this form.</small></p>
+            <p><small class="help-block">Username is the same as given by WEiTI authorities (e.g. dievseie).</small></p>
+            {% if type == 'staff' %}
+                <p><small class="help-block">Note that staff permission can be granted only to staff members.</small></p>
+                <p><small class="help-block">You also can risen existing access privileges (user <span class="glyphicon glyphicon-arrow-right"></span> staff).</small></p>
+            {% else %}
+                <p><small class="help-block">You also can lower existing access privileges (staff <span class="glyphicon glyphicon-arrow-right"></span> user).</small></p>
+            {% endif %}
+
+            {# TODO: autocomplete for username using server data of registered users #}
+            <hr>
+            <h4>Invite</h4>
+            <p>You can invite user who is not registered in the Algochecker via an e-mail.</p>
+            <p class="pb-10">This e-mail will contain a link which will automatically grant {{ type }} access to this group.</p>
+            <form class="form-inline" action="{{ url('staff_group_access_{}'.format(type), args=[group.id]) }}" method="POST">
+                {{ csrf_input }}
+                {{ single_invitation_form.send_invitation }}
+                <div class="form-group form-group-sm">
+                    {{ single_invitation_form.email }}
+                </div>
+                <div class="form-group form-group-sm">
+                    <button type="submit" name="submit" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-log-in"></span> Invite</button>
+                </div>
+            </form><br>
+            <p><small class="help-block">Invitation token is valid for 72 hours after sending.</small></p>
+            <p><small class="help-block">You can revoke tokens on <a href="{{ url('staff_group_invitation_list', args=[group.id]) }}">this page</a>.</small></p>
+            {% if type == 'staff' %}
+                <p><small class="help-block">Be aware that you are granting <b>staff</b> access, invite only trusted users.</small></p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

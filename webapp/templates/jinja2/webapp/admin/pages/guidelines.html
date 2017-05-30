@@ -1,0 +1,378 @@
+{% extends "webapp/_layout_narrow.html" %}
+
+{% block title %}Guidelines | {% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li class="active">Guidelines</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <ul class="nav nav-tabs nav-tabs-margin" role="tablist">
+        <li role="presentation" class="active"><a href="#tab-pkg" aria-controls="profile" role="tab" data-toggle="tab">Package</a>
+        </li>
+        <li role="presentation"><a href="#tab-md" aria-controls="home" role="tab" data-toggle="tab">Markdown</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="tab-pkg">
+
+            <h3>How does Algochecker work?</h3>
+            <p>
+                Simply speaking: the system accepts the source code sent by a user and performs compilation
+                of that code using the compiler and options defined by task creator.
+                The next step is conducting set of tests on the compiled code - it means that the code is being
+                run in a virtual machine with defined restrictions (memory, execution time etc) and checking if the
+                program gives correct results.
+            </p>
+            <p>
+                Automatic assessment is related only to the outcome of program work (it's output).
+                It doesn't check code style, overall sense etc.
+                Testing is done using the input data which was defined by the task author.
+            </p>
+
+
+            <h3>Exemplary pack</h3>
+            <p>
+                Let's use an exemplary pack in order to explain how to put previous two paragraphs in life.
+                New task can be created by filling in the form in Algochecker but first it is required to prepare
+                the pack according to desired requirements.
+            </p>
+
+            <p>
+                Mentioned pack is a <code>.zip</code> file which consists of directories <code>input/</code>,
+                <code>output/</code> and a configuration file <code>config.yml</code>
+            </p>
+
+            <p>
+                Let's analyze the exemplary pack <a href="/static/webapp/multiplication.zip">multiplication.zip</a>.
+                It is a pack which defines a task "Write a program which will read three numbers and print their product."
+                The best way is to download the pack, unpack it and analyze the content together with reading this page.
+            </p>
+
+            <p>
+                First of all, the pack contains the file <code>config.yml</code> (can be created using Notepad).
+                The file contains basic information for the system about how the compilation and testing must be performed.
+                It has information which compiler must be used (<code>compiler.name</code>) and how much time the program
+                has in order to produce required results (<code>runner.limits.timeout</code>).
+            </p>
+
+            <p>
+                Apart from that, the pack contains directories <code>input/</code> and <code>output/</code>, and inside
+                them there are files with identical names. Directory <code>input/</code> holds input data and directory
+                <code>output/</code> holds data with expected output.
+            </p>
+
+            <p>
+                Exact meaning is: if on the standard input of the program sent by a user we will put contents of the file
+                <code>input/test1.txt</code>, the program must output the answer as in file <code>output/test1.txt</code>.
+            </p>
+
+            <p>
+                That is the way basic testing looks like. Algochecker runs the program, gives it prepared data,
+                waits for the result and then compares it with the expected output.
+                During the testing all limits for time/memory/CPU are taken into account according to the configuration.
+            </p>
+
+            <p>
+                Our exemplary configuration file will force the program not to execute longer than <code>1000 ms</code> (1 second).
+                If in case of any test, the program will hang, after a second it will be turned off with the test assumed as failed.
+                Similarly in case when memory limit is exceeded.
+            </p>
+            <p>
+                You may ask the question: are three tests enough to tell if the program is actually working as supposed or not?
+            </p>
+            <p>
+                The answer is: probably yes. User has absolutely no control on the compilation and testing process,
+                which is carried by the Algochecker.
+                The user has no possibility to find out what data was actually inputted to his program.
+                For that reason, the risk of somehow "cheating" to work around the requirements is substantially reduced.
+                It really depends on the set of tests, which should include normal input as well as corner cases and so on.
+            </p>
+
+            <h3>How to create a task having a .zip package</h3>
+            <p>
+                If you are ready with your package, go to the main page, log in, click the "Staff" tab and click the "Create group" button.
+                A group is something which aggregates problem sets and allows to control user access.
+            </p>
+            <p>
+                After creating a group please choose "Create set" button and give some name to the problem set.
+                Problem sets are like very simple sub-groups.
+            </p>
+            <p>
+                Inside your group and set, please click "Create task".
+                In the form, input the information like task name, description and some other options.
+                In the "Package" field, please choose your <code>.zip</code> package created previously.
+            </p>
+            <p>
+                The task creation process is done. You can view it from the administrator perspective by going to the "Staff" tab,
+                entering into the group and clicking on the staff name.
+            </p>
+            <p>
+                From the user perspective - go into "Tasks" tab and then click on the name of tasks.
+                You will be provided with a page containing a task description and a form which allows to upload the solution to be tested.
+            </p>
+
+            <h3>Exemplary program for multiplication.zip</h3>
+            <p>
+                Exemplary program, which will be assessed positively.
+            </p>
+
+            <pre>#include &lt;stdio.h&gt;
+
+int main() {
+    int x, y, z;
+    scanf("%d %d %d", &x, &y, &z);
+    printf("%d\n", x * y * z);
+
+    return 0;
+}</pre>
+
+            <p>
+                Exemplary program, which will stuck and fail tests because of that
+            </p>
+
+            <pre>#include &lt;stdio.h&gt;
+
+int main() {
+    int x, y, z;
+    scanf("%d %d %d", &x, &y, &z);
+
+    while(x > 0) {
+        y++;
+        printf("%d\n", y);
+    }
+
+    return 0;
+}</pre>
+
+            <p>
+                Exemplary program, which will produce wrong result
+            </p>
+
+            <pre>#include &lt;stdio.h&gt;
+
+int main() {
+    int x, y, z;
+    scanf("%d %d %d", &x, &y, &z);
+    printf("%d\n", x + y - z);
+
+    return 0;
+}</pre>
+
+            <h3>Creating another packs</h3>
+            <p>
+                First of all we recommend to experiment with presented <code>multiplication.zip</code> pack for a bit.
+                Also, new pack can be created by remaking an exemplary one.
+                Included file <code>config.yml</code> contains set up for simple tasks in C language.
+            </p>
+
+            <p>
+                Not all available options and modes of testing were presented here. More complex options are not
+                well documented yet. Information about more complex options can be received by contacting authors:
+                <a href="mailto:michal@algochecker.con">Michal</a> or <a href="mailto:dima@algochecker.com">Dima</a>.
+            </p>
+
+            <h3>Additional functions regarding testing</h3>
+            <h4>Test grouping</h4>
+            <p>
+                If the set of possible answers is not big, for example in the task we expect simple <code>YES</code>
+                or <code>NO</code> depending on the input data then the result of 50% can be obtained by sending program
+                which prints out the same static answer.
+            </p>
+
+            <p>
+                That problem can be solved by grouping the tests which can be achieved by naming input and output files
+                according to the following convention: <code>groupname-testname.txt</code> (hyphen splits group name from the test name).
+                For example, if we create tests like this:
+            </p>
+            <ul>
+                <li><code>grA-test1.txt</code> (set of data with result YES)</li>
+                <li><code>grA-test2.txt</code> (set of data with result NO)</li>
+                <li><code>grB-test3.txt</code> (set of data with result YES)</li>
+                <li><code>grB-test4.txt</code> (set of data with result NO)</li>
+            </ul>
+            <p>
+                &hellip; then the points for the group will be assigned only if all tests from the group will succeed
+            </p>
+            <p>
+                Program which will pass only tests <code>grA-test1.txt</code> and <code>grB-test3.txt</code>
+                (that is the program which always outputs YES, independently from the inout data)
+                will receive the result 0%, since points will not be assigned to any of the groups.
+            </p>
+            <p>
+                If program will succeed with first three test, but fail <code>grB-test4.txt</code> then the points
+                will be assigned only to group A, hence the result will be 2/4 = 50%.
+            </p>
+
+            <h4>Additional input files for the program</h4>
+            <p>
+                During the execution of each test Algochecker checks if there exists directory <code>data/&lt;name of the test&gt;</code>
+                If it does, then files in that directory will be available for reading and writing from the working directory of
+                program being tested.
+            </p>
+
+            <h4>Weighted test scoring</h4>
+            <p>
+                It is possible to score test results in a non-uniform manner.
+                For that reason you need to edit <code>config.yaml</code> file of your package and in the <code>env</code>
+                section, introduce the following code:
+            </p>
+
+            <pre>tests:
+    test0:
+        points: 0
+        store_output: "public"
+    test1:
+        points: 1
+    test2:
+        points: 2
+    test3:
+        points: 5
+</pre>
+            <p>
+                Where `test0` till `test3` are your test names.
+                Such configuration would cause that user will not receive points for `test0` but the output from this test will
+                be presented in the evaluation report.
+                Passing `test2` would cause that he will be awarded with 2 points, `test3` for 5 points etc.
+            </p>
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="tab-md">
+            <h3>What is Markdown?</h3>
+            <p>Markdown is a very simple, yet powerful markup language used to easily style texts.
+                It can be converted to html, which makes it a convenient way to format web documents. What is important,
+                the text formatted using Markdown is human-friendly.
+            </p>
+            <p>
+                Markdown can be used to create instructions to tasks in our system.
+            </p>
+            <h3>Basic syntax</h3>
+            <p>The text written with help of Markdown:</p>
+            <pre>
+# Heading 1
+## Heading 2
+###  Heading 3
+#### Heading 4
+
+---
+
+#### Horizontal line
+
+---
+
+
+The text can be **embolden** or  _italicized_
+
+#### Ordered lists
+1. First item
+2. Second item
+3. Third item
+
+#### Bullet lists
+* car
+* train
+* boat
+
+---
+
+#### Links
+[Link text](http://some-address.com)
+
+#### Embedding code
+```
+&lt;b&gt;The html tags are displayed despite of being a proper html code&lt;/b&gt;
+```
+
+---
+
+#### Tables
+
+
+| Colon         | Specifies     | Alignment     |
+| ------------- |:-------------:| -------------:|
+| left-aligned  | centered      | right-aligned |
+| item          | 3             |               |
+| item          | 5             |               |
+            </pre>
+            <p>Will be rendered as:</p>
+            <div>
+                <h1>Heading 1</h1>
+                <h2>Heading 2</h2>
+                <h3>Heading 3</h3>
+                <h4>Heading 4</h4>
+                <hr>
+                <h4>Horizontal line</h4>
+                <hr>
+                <p>The text can be <strong>embolden</strong> or <em>italicized</em></p>
+                <h4>Ordered lists</h4>
+                <ol>
+                    <li>First item</li>
+                    <li>Second item</li>
+                    <li>Third item</li>
+                </ol>
+                <h4>Bullet lists</h4>
+                <ul>
+                    <li>car</li>
+                    <li>train</li>
+                    <li>boat</li>
+                </ul>
+                <hr>
+                <h4>Links</h4>
+                <p><a href="http://some-address.com">Link text</a></p>
+                <h4>Embedding code</h4>
+                    <pre>
+&lt;b&gt;The html tags are displayed despite of being a proper html code&lt;/b&gt;</pre>
+
+
+                <hr>
+                <h4>Tables</h4>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Colon</th>
+                        <th align="center">Specifies</th>
+                        <th align="right">Alignment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>left-aligned</td>
+                        <td align="center">centered</td>
+                        <td align="right">right-aligned</td>
+                    </tr>
+                    <tr>
+                        <td>item</td>
+                        <td align="center">3</td>
+                        <td align="right"></td>
+                    </tr>
+                    <tr>
+                        <td>item</td>
+                        <td align="center">5</td>
+                        <td align="right"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <hr/>
+            <h3>Different implementations</h3>
+            Please note that Markdown has many flavors and dialects, so it may happen that not all syntactic elements
+            work in the desired way.
+            <h3>Read more</h3>
+            <ul>
+                <li><a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown Cheatsheet
+                    written by Adam Pritchard</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Markdown">Wikipedia</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static("webapp/js/page/guidelines.js") }}"></script>
+{% endblock %}

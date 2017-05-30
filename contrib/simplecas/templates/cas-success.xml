@@ -1,0 +1,13 @@
+<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+    <cas:authenticationSuccess>
+        <cas:user>{{ username }}</cas:user>
+        <cas:attributes>
+            <cas:elkaEresId>id:{{ username }}</cas:elkaEresId>
+            <cas:employeeType>{{ employee_type }}</cas:employeeType>
+            <cas:uid>{{ username }}</cas:uid>
+            <cas:mail>{{ username }}@algo.invalid</cas:mail>
+            <cas:sn>{{ last_name }}</cas:sn>
+            <cas:givenName>{{ first_name }}</cas:givenName>
+        </cas:attributes>
+    </cas:authenticationSuccess>
+</cas:serviceResponse>

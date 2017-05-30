@@ -1,0 +1,78 @@
+{%- macro h_field_label(field, classes) -%}
+    <label class="{{ classes }} control-label">
+        {% if field.help_text %}
+            <abbr title="{{ field.help_text }}" data-toggle="tooltip">{{ field.label }}</abbr>
+        {% else %}
+            {{ field.label }}
+        {% endif %}
+        {% if field.field.required %}
+            <span class="star-required">*</span>
+        {% endif %}
+    </label>
+{%- endmacro -%}
+
+{%- macro h_field_errors(field) -%}
+    {% if field.errors %}
+        <div class="help-block error-timeout">
+            {% for error in field.errors %}
+                <span class="label label-danger"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ error|safe }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+{%- endmacro -%}
+
+{%- macro bootsrap_input(field) -%}
+    {% if field.field.widget.__class__.__name__ == 'Textarea' %}
+        {{ field|f_setattr({'class': 'form-control', 'rows': 4, 'cols': 15, 'style': 'resize: vertical'}) }}
+    {% elif field.field.widget.__class__.__name__ == 'FileInput' or  field.field.widget.__class__.__name__ == 'ClearableFileInput'%}
+        {{ field }}
+    {% else %}
+        {{ field|f_setattr({'class': 'form-control', 'autocomplete': 'off'})|safe }}
+    {% endif %}
+{%- endmacro -%}
+
+{%- macro h_form_field(field, l_classes, f_classes) -%}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% else %}
+        <div class="form-group{% if field.errors %} has-error{% endif %}">
+            {% if l_classes %}
+                {{ h_field_label(field, l_classes) }}
+            {% endif %}
+            <div class="{{ f_classes }}">
+                {{ bootsrap_input(field) }}
+                {{ h_field_errors(field) }}
+            </div>
+        </div>
+    {% endif %}
+{%- endmacro -%}
+
+{%- macro h_form_fields(fields, l_classes, f_classes, exclude=None) -%} {# can be more customized in future #}
+    {% for field in fields %}
+        {% if field != exclude %}
+            {{ h_form_field(field, l_classes, f_classes) }}
+        {% endif %}
+    {% endfor %}
+{%- endmacro -%}
+
+{%- macro h_action_buttons(classes, submit, reset, extra='') -%}
+    <div class="form-group">
+        <div class="{{ classes }} clearfix">
+            {% if reset %}
+                <button type="reset" class="btn btn-danger">
+                    {% if reset.icon %}
+                        <span class="glyphicon glyphicon-{{ reset.icon }}"></span>
+                    {% endif %}
+                    {{ reset.name if reset.name else 'Reset' }}
+                </button>
+            {% endif %}
+            <button type="submit" class="btn btn-{{ submit.class if submit.class else 'primary' }} pull-right">
+                {% if submit.icon %}
+                    <span class="glyphicon glyphicon-{{ submit.icon }}"></span>
+                {% endif %}
+                {{ submit.name }}
+            </button>
+            {{ extra|safe }}
+        </div>
+    </div>
+{%- endmacro -%}

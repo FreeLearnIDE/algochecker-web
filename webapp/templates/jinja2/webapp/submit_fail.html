@@ -1,0 +1,27 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-xs-12 col-xs-offset-0">
+            {{ global_alert() }}
+            <ol class="breadcrumb">
+                <li><a href="{{ url('index') }}">Home</a></li>
+                <li><a href="{{ url('tasks') }}">Tasks</a></li>
+                <li><a href="{{ url('task', args=[task.id]) }}">{{ task.task_group.name|truncate(35) }}: {{ task.name|truncate(35) }}</a></li>
+                <li class="active">Submit attempt</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {% from "webapp/macro/error.html" import print_error %}
+
+    {{
+        print_error(
+            'Failed to submit your code.',
+            'It appears that there is some problem with our infrastructure.<br>Please try once again in a few minutes. We&#39;re sorry for your inconvenience.'
+        )
+    }}
+
+{% endblock %}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Algochecker Web Result Poller
+After=network.target postgresql.service redis-server.service
+
+[Service]
+ExecStart=/var/www/algochecker-web/manage.py runpoller
+WorkingDirectory=/var/www/algochecker-web
+Environment="PATH=/var/www/algochecker-web:/usr/bin"
+TimeoutStopSec=0
+Restart=always
+PIDFile=/run/algoweb-poller.pid
+
+[Install]
+WantedBy=multi-user.target

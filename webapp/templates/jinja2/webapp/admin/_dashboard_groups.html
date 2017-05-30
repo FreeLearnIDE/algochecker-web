@@ -1,0 +1,12 @@
+{% for item in items %}
+    <h3>
+        <a href="{{ url('staff_group_tasks', args=[item.group.id]) }}">{{ item.group.name|truncate(40) }}</a>
+        <small>— {{ "public" if item.group.is_public else "restricted" }} access{% if item.group.archived %},
+            archived{% endif %}</small>
+    </h3>
+    {% if item.group.description %}
+        {{ item.group.description|linebreaksbr }}
+    {% endif %}
+{% else %}
+    <div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> There are no groups to show</div>
+{% endfor %}

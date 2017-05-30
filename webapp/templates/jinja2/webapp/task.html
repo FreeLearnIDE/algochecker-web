@@ -1,0 +1,159 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{{ url('index') }}">Home</a></li>
+    <li><a href="{{ url('tasks') }}">Tasks</a></li>
+    <li class="active">{{ group.name|truncate(35) }}: {{ task.tg_set.name|truncate(35) }}: {{ task.name|truncate(35) }}</li>
+</ol>
+{% endblock %}
+
+{% block messages %}
+    {# On this page we want messages to appear at section "Submissions" #}
+{% endblock %}
+
+{% block body %}
+
+    <h2>{{ task.name }}</h2>
+    <hr class="small-margin" />
+
+    {% if not task.published and request.user.is_staff %}
+        <div class="alert alert-warning" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span> This task is unpublished. <b>It is not listed nor accessible for users.</b>
+        </div>
+    {% endif %}
+
+    <h3>Description</h3>
+    <div class="markdown-description">
+        {{ task.description_cache|safe }}
+    </div>
+    <hr class="small-margin" />
+
+    <h3 id="submissions_anchor">
+        Submissions
+        <span class="badge">{{ limits.used }}{% if limits.total %} / {{ limits.total }}{% endif %}</span>
+    </h3>
+
+    {% include "webapp/_messages.html" %}
+
+    {% if not submissions %}
+        <div class="alert alert-info text-center" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span> No submissions received
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table evaluations-table">
+                <thead>
+                    <tr>
+                        <th width="19%">Submit time</th>
+                        <th width="15%">Status</th>
+                        <th width="10%">Result</th>
+                        <th width="46%">Message</th>
+                        <th width="10%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for submission in submissions %}
+                    {% if evaluations[submission.uuid] %}
+                        {% with evaluation = evaluations[submission.uuid] %}
+                            <tr data-id="{{ tokens[submission.uuid] }}"{% if evaluation.is_invalid %} class="danger"{% endif %}>
+                                <td>{{ submission.submitted|fltime }}</td>
+                                <td>
+                                    {% if evaluation.status == 'ok' %}
+                                        <span class="label label-success">
+                                            <span class="glyphicon glyphicon-ok"></span> evaluated
+                                        </span>
+                                    {% else %}
+                                        <span class="label label-danger">
+                                            <span class="glyphicon glyphicon-exclamation-sign"></span> rejected
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if evaluation.score is not none %}
+                                        {% if evaluation.is_invalid %}<del class="text-{{ evaluation.view_info.color }}">{% endif %}
+                                            <span class="text-{{ evaluation.view_info.color }}">{{ evaluation.score }}%</span>
+                                        {% if evaluation.is_invalid %}</del>{% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>{{ evaluation.view_info.message }}</td>
+                                <td>
+                                    <a href="{{ url('view_report', args=[submission.uuid]) }}" class="btn btn-xs btn-default">
+                                        <span class="glyphicon glyphicon-list-alt"></span> View report
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endwith %}
+                    {% else %}
+                    <tr data-id="{{ tokens[submission.uuid] }}" class="pending">
+                        <td>{{ submission.submitted|fltime }}</td>
+                        <td class="status"></td>
+                        <td class="prog-bar"></td>
+                        <td class="message"></td>
+                        <td class="report-link"></td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-xs-12 col-xs-offset-0 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+            <h4 class="text-center">Submit new solution</h4>
+            {% from "webapp/macro/task_deadline.html" import task_deadline %}
+            <p class="text-center"><small>{{ task_deadline(task) }}</small></p>
+            {% if limits.can_submit and not task.archived and not group.archived and not deadline.missed %}
+                <p class="text-muted text-center">
+                    <small><strong>Before submitting your code</strong>, please read <b><a href="{{ url('help') }}">this</a></b> carefully.</small>
+                </p>
+                <form method="post" enctype="multipart/form-data" action="{{ url('submit_task', args=[task.id]) }}">
+                    {{ csrf_input }}
+                    <div class="row">
+                        <div class="form-group col-sm-3">
+                            <label for="file-input-{{ task.id }}">Files:</label>
+                        </div>
+                        <div class="form-group col-sm-9">
+                            <input id="file-input-{{ task.id }}" type="file" name="file" multiple/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-sm-12">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span class="glyphicon glyphicon-send"></span> Submit
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p class="text-muted text-center">
+                            <small>
+                                Hint: If you want to upload whole project,
+                                just select multiple files by holding Ctrl on the keyboard
+                            </small>
+                        </p>
+                    </div>
+                </form>
+            {% else %}
+                <div class="alert alert-warning text-center">
+                    <span class="glyphicon glyphicon-exclamation-sign"></span>
+                    {% if task.archived or group.archived %}
+                        This task is archived
+                    {% elif deadline.missed %}
+                        The deadline has already passed
+                    {% else %}
+                        Limit on submissions is reached
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ static("webapp/js/tasks.js") }}"></script>
+    <script src="{{ static("webapp/js/page/task.js") }}"></script>
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ static("webapp/css/highlight.css") }}" />
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "webapp/admin/_confirm_page.html" %}
+
+{% set color_scheme = 'success' %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li><a href="{{ url('staff_group_tasks', args=[group.id]) }}">{{ group.name|truncate(35) }}</a></li>
+        <li class="active">Copy</li>
+    </ol>
+{% endblock %}
+
+{% block action_title %}
+Please confirm copying task group &laquo;{{ group.name }}&raquo;
+{% endblock %}
+
+{% block action_text %}
+
+    <h5 class="text-center">What will be copied</h5>
+    <ul>
+        <li>the group will be copied with all the tasks inside</li>
+        <li>each task setting incl. limits and package</li>
+        <li>tasks will remain grouped in sets in the same way</li>
+    </ul>
+    <h5 class="text-center">What will not be copied</h5>
+    <ul>
+        <li>access list</li>
+        <li>task submissions and deadlines</li>
+        <li>group type, it will be private by default (you can change it later)</li>
+    </ul>
+
+    <p class="text-muted text-center">
+        <small>
+            All tasks will become unpublished: not visible to users until published.
+        </small>
+    </p>
+
+    <h5 class="text-center">Please provide new group name &amp; description</h5>
+
+{% endblock %}
+
+
+{% block form_extra_inputs %}
+    {% from "webapp/macro/forms.html" import bootsrap_input %}
+    {{ bootsrap_input(form.name) }}
+    <br>
+    {{ bootsrap_input(form.description) }}
+    <input type="hidden" name="cancel-action" value="0" id="sbm-cancel">
+{% endblock %}

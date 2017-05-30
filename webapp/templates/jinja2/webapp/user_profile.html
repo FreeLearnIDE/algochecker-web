@@ -1,0 +1,33 @@
+{% extends "webapp/_layout.html" %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{{ url('index') }}">Home</a></li>
+    <li class="active">My profile</li>
+</ol>
+{% endblock %}
+
+{% block body %}
+
+    <h2>My profile</h2>
+    <hr>
+    <p>
+        First name: <strong>{{ request.user.first_name }}</strong><br>
+        Last name: <strong>{{ request.user.last_name }}</strong><br>
+        E-mail: <strong>{{ request.user.email }}</strong><br>
+    </p>
+    <p>
+        Access level: <strong>{{ 'Dev (superuser)' if request.user.is_superuser else ('Staff (lecturer/instructor)' if request.user.is_staff else 'user') }}</strong><br>
+    </p>
+    <h3>CAS Data</h3>
+    {% if request.user.casusermeta %}
+    <p>
+        External ID: <strong>{{ request.user.casusermeta.ext_id }}</strong>
+    </p>
+    {% else %}
+    <p>
+        This account was not created through CAS.
+    </p>
+    {% endif %}
+
+{% endblock %}
