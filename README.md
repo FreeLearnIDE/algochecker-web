@@ -1,5 +1,7 @@
 ## Installation guide ##
-1. Install **PostgreSQL** database backend (`apt-get install postgresql-server`).
+Recommended: latest Ubuntu LTS.
+
+1. Install **PostgreSQL** database backend (`apt-get install postgresql`).
 2. Configure some user and database in PostgreSQL:
 https://www.cyberciti.biz/faq/howto-add-postgresql-user-account/
 3. Install **Redis** message queue, may be with default settings (`apt-get install redis-server`).
