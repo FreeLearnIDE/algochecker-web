@@ -34,7 +34,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url('help') }}"><span class="glyphicon glyphicon-info-sign"></span> Help</a></li>
                     {% if not request.user.is_authenticated() %}
-                        <li><a href="{{ url('cas_ng_login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+                        <li><a href="{{ url('base_login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
                     {% endif %}
                     {% if request.user.is_authenticated() %}
                         {% if request.user.is_superuser %}

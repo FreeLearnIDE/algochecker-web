@@ -177,3 +177,17 @@ class FeedbackFrom(Form):
         label='Write your message here:',
         widget=forms.Textarea
     )
+
+
+class InternalLoginForm(Form):
+    username = forms.CharField(label='Username')
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+
+class InternalRegisterForm(Form):
+    username = forms.CharField(min_length=3, label='Username')
+    password = forms.CharField(min_length=8, label='Password', widget=forms.PasswordInput)
+    repeat_password = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
+    first_name = forms.CharField(min_length=1, label='First name')
+    last_name = forms.CharField(min_length=1, label='Last name')
+    email = forms.CharField(label='E-mail address', widget=forms.EmailInput)

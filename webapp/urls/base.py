@@ -23,10 +23,15 @@ urlpatterns = [
     url(r'^task/report/(?P<submission_id>[^/]+)/$', v.submission_report, name='view_report'),
 
     # accounts
+    url(r'^accounts/login/$', v.choose_login_method, name='base_login'),
 
-    url(r'^accounts/login/$', django_cas_ng.views.login, name='cas_ng_login'),
-    url(r'^accounts/logout/$', django_cas_ng.views.logout, name='cas_ng_logout'),
-    url(r'^accounts/callback/$', django_cas_ng.views.callback, name='cas_ng_proxy_callback'),
+    url(r'^accounts/internal/login/$', v.internal_login, name='internal_login'),
+    url(r'^accounts/internal/logout/$', v.internal_logout, name='internal_logout'),
+    url(r'^accounts/internal/register/$', v.internal_register, name='internal_register'),
+
+    url(r'^accounts/cas/login/$', django_cas_ng.views.login, name='cas_ng_login'),
+    url(r'^accounts/cas/logout/$', django_cas_ng.views.logout, name='cas_ng_logout'),
+    url(r'^accounts/cas/callback/$', django_cas_ng.views.callback, name='cas_ng_proxy_callback'),
 
     # user
 

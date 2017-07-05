@@ -1,3 +1,7 @@
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+
 import algoweb.settings
 import json
 import redis
@@ -22,13 +26,13 @@ from django.views.static import serve
 
 from os.path import basename, join as path_join
 
-from webapp.forms import FeedbackFrom
+from webapp.forms import FeedbackFrom, InternalLoginForm, InternalRegisterForm
 from webapp.models import Task, Submission, SubmissionFile, SubmissionEvaluation, SubmissionTest, TaskGroup, \
     TaskGroupAccess, TaskGroupInviteToken, TaskGroupSet
 from webapp.utils.highlight import highlight_submission_files
 from webapp.utils.redis_facade import upload_submission, get_submission_status
 from webapp.utils.main import check_files
-from algoweb.settings import EMAIL_SENDER_NOTIFIER, EMAIL_RECIPIENT_NOTIFIER
+from algoweb.settings import EMAIL_SENDER_NOTIFIER, EMAIL_RECIPIENT_NOTIFIER, INTERNAL_USERNAME_FORMAT
 
 
 def index(request):
@@ -408,3 +412,62 @@ def handle_csp_violation(request):
     logging.warning('CSP VIOLATION: {}'.format(rq))
 
     return HttpResponse('accepted')
+
+
+def choose_login_method(request):
+    return render(request, 'webapp/choose_login.html')
+
+
+def internal_login(request):
+    if request.method == 'POST':
+        form = InternalLoginForm(request.POST)
+        username = INTERNAL_USERNAME_FORMAT.format(form.data['username'])
+
+        user = authenticate(username=username, password=form.data['password'])
+
+        if user is not None:
+            login(request, user)
+            messages.info(request, 'Login successful. Welcome {}.'.format(username))
+            return redirect('index')
+        else:
+            form.add_error('username', 'Invalid login or password was provided.')
+    else:
+        form = InternalLoginForm()
+
+    context = {"form": form}
+    return render(request, 'webapp/internal_login.html', context)
+
+
+def internal_logout(request):
+    logout(request)
+    return redirect('index')
+
+
+def internal_register(request):
+    if request.method == 'POST':
+        form = InternalRegisterForm(request.POST)
+
+        if form.data['password'] != form.data['repeat_password']:
+            form.add_error('repeat_password', 'Provided passwords doesn\'t match each other.')
+
+        if User.objects.filter(username=form.data['username']).count() != 0:
+            form.add_error('username', 'User with such username already exists.')
+
+        if form.is_valid():
+            username = INTERNAL_USERNAME_FORMAT.format(form.data['username'])
+
+            try:
+                user = User.objects.create_user(username, form.data['email'], form.data['password'])
+                user.first_name = form.data['first_name']
+                user.last_name = form.data['last_name']
+                user.save()
+
+                messages.info(request, 'Your account was succesfully created. Now please log in.')
+                return redirect('internal_login')
+            except IntegrityError:
+                form.add_error('username', 'User with such username already exists.')
+    else:
+        form = InternalRegisterForm()
+
+    context = {"form": form}
+    return render(request, 'webapp/internal_register.html', context)
