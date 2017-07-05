@@ -23,10 +23,7 @@ In order to get algoweb working even quicker, you need to:
 * Execute `manage.py runserver` - this is the proper HTTP development server.
 
 ## How to login ##
-User registration and sign-in is not in the scope of Algochecker. Thus, it is required to setup a CAS-compatible
-authentication server and then configure `CAS_*` properties in `algoweb/settings.py`.
+User authentication could be handled either by the external CAS server, internal Algochecker account mechanism (most natural) or both of them simultaneously.
 
-If you want to play around without actually configuring valid CAS server, you can execute:
-`manage.py createsuperuser`, create some account for yourself and navigate to: `http://localhost/admin/`.
-After successful login re-navigate to the main page (`http://localhost/`) and you are done.
-This workaround is suitable only for development purposes.
+The easiest way to play around without actually doing much configuration is to execute:
+`manage.py createsuperuser`, create some account for yourself and then log in using internal account mechanism.
