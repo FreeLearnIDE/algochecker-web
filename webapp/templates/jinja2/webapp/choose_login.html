@@ -13,9 +13,30 @@
     <div class="row">
         <div class="col-xs-12 col-xs-offset-0 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
             <h2 class="text-center">Choose login method</h2>
-            <a href="{{ url('cas_ng_login') }}">cas login</a><br>
-            <a href="{{ url('internal_login') }}">internal login</a><br>
-            <a href="{{ url('internal_register') }}">internal register</a>
+
+            <a href="{{ url('cas_ng_login') }}" class="login-choice-link">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h4><span class="glyphicon glyphicon-user"></span> Login using {{ cas_server_name }} (recommended)</h4>
+                        <p>
+                            Please choose this option if you have a valid account in {{ cas_server_name }}.
+                            Your permissions will be recognized and granted to you automatically.
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ url('internal_login') }}" class="login-choice-link">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h4><span class="glyphicon glyphicon-user"></span> I don't have an account in the {{ cas_server_name }}</h4>
+                        <p>
+                            This option will allow you to use an internal account if you don't have access to the
+                            {{ cas_server_name }}.
+                        </p>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 

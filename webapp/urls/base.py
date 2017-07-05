@@ -25,8 +25,11 @@ urlpatterns = [
     # accounts
     url(r'^accounts/login/$', v.choose_login_method, name='base_login'),
 
+    url(r'^accounts/internal/$', v.choose_internal_login, name='internal_choose'),
     url(r'^accounts/internal/login/$', v.internal_login, name='internal_login'),
     url(r'^accounts/internal/logout/$', v.internal_logout, name='internal_logout'),
+    url(r'^accounts/internal/forget/$', v.internal_forget, name='internal_forget'),
+    url(r'^accounts/internal/forget/(?P<signed_data>[^/]+)/$', v.internal_forget_link, name='internal_forget_link'),
     url(r'^accounts/internal/register/$', v.internal_register, name='internal_register'),
 
     url(r'^accounts/cas/login/$', django_cas_ng.views.login, name='cas_ng_login'),

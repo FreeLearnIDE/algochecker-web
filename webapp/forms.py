@@ -191,3 +191,13 @@ class InternalRegisterForm(Form):
     first_name = forms.CharField(min_length=1, label='First name')
     last_name = forms.CharField(min_length=1, label='Last name')
     email = forms.CharField(label='E-mail address', widget=forms.EmailInput)
+
+
+class PasswordForgetInitForm(Form):
+    username = forms.CharField(min_length=3, label='Username')
+    email = forms.CharField(label='E-mail address', widget=forms.EmailInput)
+
+
+class PasswordForgetResetForm(Form):
+    password = forms.CharField(min_length=8, label='Password', widget=forms.PasswordInput)
+    repeat_password = forms.CharField(label='Repeat password', widget=forms.PasswordInput)

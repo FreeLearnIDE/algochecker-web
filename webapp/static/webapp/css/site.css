@@ -167,3 +167,7 @@ p.pb-10 { padding-bottom: 10px; }
 .task-set-label {
     font-size: 20px;
 }
+
+.login-choice-link:hover, .login-choice-link:active, .login-choice-link:focus {
+    text-decoration: none;
+}

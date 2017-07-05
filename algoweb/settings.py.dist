@@ -216,8 +216,9 @@ EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
-EMAIL_SENDER_INVITATION = 'invite@localhost'
-EMAIL_SENDER_NOTIFIER = 'notify@localhost'
+EMAIL_SENDER_INVITATION = 'invite@testalgo.invalid'
+EMAIL_SENDER_NOTIFIER = 'notify@testalgo.invalid'
+EMAIL_SENDER_RESET = 'reset@testalgo.invalid'
 EMAIL_RECIPIENT_NOTIFIER = ['admin@example.com']
 
 # Redis connection details
