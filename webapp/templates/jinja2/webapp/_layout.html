@@ -78,11 +78,11 @@
                 <p class="text-center">
                     <small class="text-muted">
                         <span class="glyphicon glyphicon-copyright-mark"></span>
-                        Michał Leszczyński, Dmytro Ievseienko, Paweł Paczuski
+                        Michał Leszczyński, Dmytro Ievseienko, Paweł Paczuski, Przemysław Miazga
                     </small>
                 </p>
                 {% if request.user.is_superuser and revision %}
-                    <p class="text-center text-muted"><small>algoweb version: <a href="https://gitlab.kniti.elka.pw.edu.pl/algochecker/algochecker-web/commit/{{ revision.full }}">{{ revision.short }}</a></small></p>
+                    <p class="text-center text-muted"><small>algoweb version: <a href="https://github.com/algochecker/algochecker-web/commit/{{ revision.full }}">{{ revision.short }}</a></small></p>
                 {% endif %}
             </footer>
         </div>
