@@ -544,7 +544,10 @@ def internal_register(request):
 
 
 def terms(request):
-    with open(os.path.join(BASE_DIR, 'TERMS.md')) as file:
-        contents = apply_markdown(file.read())
+    try:
+        with open(os.path.join(BASE_DIR, 'TERMS.md')) as file:
+            contents = apply_markdown(file.read())
+    except FileNotFoundError:
+        contents = 'In order to make terms page work please create TERMS.md file in the project root directory.'
 
     return render(request, 'webapp/terms.html', context={'contents': contents})
