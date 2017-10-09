@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -33,9 +35,9 @@ from webapp.models import Task, Submission, SubmissionFile, SubmissionEvaluation
     TaskGroupAccess, TaskGroupInviteToken, TaskGroupSet
 from webapp.utils.highlight import highlight_submission_files
 from webapp.utils.redis_facade import upload_submission, get_submission_status
-from webapp.utils.main import check_files
+from webapp.utils.main import check_files, apply_markdown
 from algoweb.settings import EMAIL_SENDER_RESET, EMAIL_SENDER_NOTIFIER, EMAIL_RECIPIENT_NOTIFIER, \
-    INTERNAL_USERNAME_FORMAT, CAS_SERVER_NAME
+    INTERNAL_USERNAME_FORMAT, CAS_SERVER_NAME, BASE_DIR
 
 
 def index(request):
@@ -349,7 +351,6 @@ def download_package(request, task_data, package_name):
 
 def get_git_revision():
     import subprocess
-    from algoweb.settings import BASE_DIR
 
     try:
         pr = subprocess.Popen(
@@ -540,3 +541,10 @@ def internal_register(request):
 
     context = {"form": form}
     return render(request, 'webapp/internal_register.html', context)
+
+
+def terms(request):
+    with open(os.path.join(BASE_DIR, 'TERMS.md')) as file:
+        contents = apply_markdown(file.read())
+
+    return render(request, 'webapp/terms.html', context={'contents': contents})

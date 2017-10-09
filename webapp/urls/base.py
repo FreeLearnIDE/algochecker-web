@@ -12,6 +12,7 @@ urlpatterns = [
     # static pages
 
     url(r'^help/$', Tv.as_view(template_name='webapp/pages/help.html'), name='help'),
+    url(r'^terms/$', v.terms, name='terms'),
     url(r'^feedback/$', v.feedback, name='feedback'),
 
     # tasks

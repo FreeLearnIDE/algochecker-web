@@ -9,3 +9,4 @@
 /webapp/media/*
 !/webapp/media/.empty
 .DS_Store
+TERMS.md
