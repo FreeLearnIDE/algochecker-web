@@ -26,7 +26,7 @@
             <td>{{ u.email }}</td>
             <td>{{ u.date_joined }}</td>
             <td>
-                {% if um.user.is_staff %}
+                {% if u.is_staff %}
                     <span class="label label-success">YES</span>
                 {% else %}
                     <span class="label label-danger">NO</span>
