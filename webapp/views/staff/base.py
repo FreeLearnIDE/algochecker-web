@@ -48,7 +48,7 @@ def user_list(request):
     metas = CASUserMeta.objects.all()
     users = User.objects.all()
 
-    cas_users = [u.user for u in metas]
+    cas_users = [u.user for u in metas if u.has_ext_id()]
     int_users = [u for u in users if u not in cas_users]
 
     context = {
