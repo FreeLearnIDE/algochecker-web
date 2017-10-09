@@ -6,6 +6,7 @@ from webapp.views.staff import base, group_access, group_taskset, group, submiss
 urlpatterns = [
 
     url(r'^$', base.dashboard, name='staff_dashboard'),
+    url(r'^user_list$', base.user_list, name='staff_user_list'),
 
     # | - groups
 
