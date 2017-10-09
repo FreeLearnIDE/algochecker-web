@@ -17,13 +17,21 @@
         <tr>
             <th>Username</th>
             <th>Email</th>
+            <th>Joined</th>
             <th>Staff member</th>
         </tr>
         {% for u in int_users %}
         <tr>
             <td>{{ u.username }}</td>
             <td>{{ u.email }}</td>
-            <td>{{ u.is_staff }}</td>
+            <td>{{ u.date_joined }}</td>
+            <td>
+                {% if um.user.is_staff %}
+                    <span class="label label-success">YES</span>
+                {% else %}
+                    <span class="label label-danger">NO</span>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
@@ -36,6 +44,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>CAS ID</th>
+            <th>Joined</th>
             <th>Staff member</th>
         </tr>
         {% for um in cas_users %}
@@ -43,7 +52,14 @@
             <td>{{ um.user.username }}</td>
             <td>{{ um.user.email }}</td>
             <td>{{ um.ext_id }}</td>
-            <td>{{ um.user.is_staff }}</td>
+            <td>{{ um.user.date_joined }}</td>
+            <td>
+                {% if um.user.is_staff %}
+                    <span class="label label-success">YES</span>
+                {% else %}
+                    <span class="label label-danger">NO</span>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>

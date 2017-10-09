@@ -45,8 +45,8 @@ def dashboard(request):
 
 @staff_member_required
 def user_list(request):
-    metas = CASUserMeta.objects.all()
-    users = User.objects.all()
+    metas = sorted(CASUserMeta.objects.all(), key=lambda u: u.date_joined, reverse=True)
+    users = User.objects.order_by('-date_joined').all()
 
     cas_users = [u.user for u in metas if u.has_ext_id()]
     int_users = [u for u in users if u not in cas_users]
