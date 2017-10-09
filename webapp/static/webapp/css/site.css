@@ -31,7 +31,7 @@
 
 .jmb-index {
     margin-top: -20px;
-    background: url('../img/tech_desktop__by_overdose544.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('../img/tech_desktop__by_overdose544.jpg');
 }
 
 .jmb-index .container {
