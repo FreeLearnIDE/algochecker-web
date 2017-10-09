@@ -176,6 +176,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'webapp/media')
 # In order to do so, comment the first line and uncomment the second one.
 # Remember to start simplecas by running $ python contrib/simplecas/simplecas.py command.
 
+CAS_SERVER_NAME = "EReS system"
+
 CAS_SERVER_URL = "http://127.0.0.1:5044"
 CAS_LOGIN_MSG = None
 CAS_LOGGED_MSG = None
