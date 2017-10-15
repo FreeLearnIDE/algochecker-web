@@ -194,8 +194,8 @@ CAS_KEY_EMAIL = "mail"
 CAS_KEY_ADMIN_FLAG = "employeeType"
 CAS_KEY_ADMIN_FLAG_VALUES = ["P"]
 
-CSV_FIRST_NAME = lambda row: row['Imiona'],
-CSV_LAST_NAME = lambda row: row['Nazwisko'],
+CSV_FIRST_NAME = lambda row: row['Imiona']
+CSV_LAST_NAME = lambda row: row['Nazwisko']
 CSV_EXTERNAL_ID = lambda row: row['XID'].split('_')[1]
 
 # We need to avoid overlap between internal accounts and CAS accounts if both authentication methods are supported.
