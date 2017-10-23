@@ -18,8 +18,8 @@ def load():
 def cas_user_authenticated(sender, user, created, attributes, ticket, service, **kwargs):
     # update the data in order to reflect what we had received from CAS
     # FIXME temporary hack for the case of too long first names/last names
-    user.first_name = short_name(attributes[CAS_KEY_FIRST_NAME])[:30]
-    user.last_name = short_name(attributes[CAS_KEY_LAST_NAME])[:30]
+    user.first_name = short_name(attributes[CAS_KEY_FIRST_NAME], max_subparts=2)[:30]
+    user.last_name = short_name(attributes[CAS_KEY_LAST_NAME], max_subparts=2)[:30]
     user.email = attributes[CAS_KEY_EMAIL]
 
     try:

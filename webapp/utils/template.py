@@ -1,12 +1,12 @@
 from django.utils.safestring import mark_safe
 
 
-def short_name(name):
+def short_name(name, max_subparts=1):
     """
     Take only first subpart of string if it contains more than one part.
     Used to extract only first part of first name.
     """
-    return name.split(' ', 1)[0]
+    return ' '.join(name.split(' ')[:max_subparts])
 
 
 def global_alert():
