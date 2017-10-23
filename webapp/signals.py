@@ -16,8 +16,9 @@ def load():
 @receiver(django_cas_ng.signals.cas_user_authenticated)
 def cas_user_authenticated(sender, user, created, attributes, ticket, service, **kwargs):
     # update the data in order to reflect what we had received from CAS
-    user.first_name = attributes[CAS_KEY_FIRST_NAME]
-    user.last_name = attributes[CAS_KEY_LAST_NAME]
+    # FIXME temporary hack for the case of too long first names/last names
+    user.first_name = attributes[CAS_KEY_FIRST_NAME][:30]
+    user.last_name = attributes[CAS_KEY_LAST_NAME][:30]
     user.email = attributes[CAS_KEY_EMAIL]
 
     try:
