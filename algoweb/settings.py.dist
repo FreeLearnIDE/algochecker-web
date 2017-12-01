@@ -176,6 +176,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'webapp/media')
 # In order to do so, comment the first line and uncomment the second one.
 # Remember to start simplecas by running $ python contrib/simplecas/simplecas.py command.
 
+CAS_SERVER_NAME = "EReS system"
+
 CAS_SERVER_URL = "http://127.0.0.1:5044"
 CAS_LOGIN_MSG = None
 CAS_LOGGED_MSG = None
@@ -192,9 +194,14 @@ CAS_KEY_EMAIL = "mail"
 CAS_KEY_ADMIN_FLAG = "employeeType"
 CAS_KEY_ADMIN_FLAG_VALUES = ["P"]
 
-CSV_FIRST_NAME = lambda row: row['Imiona'],
-CSV_LAST_NAME = lambda row: row['Nazwisko'],
+CSV_FIRST_NAME = lambda row: row['Imiona']
+CSV_LAST_NAME = lambda row: row['Nazwisko']
 CSV_EXTERNAL_ID = lambda row: row['XID'].split('_')[1]
+
+# We need to avoid overlap between internal accounts and CAS accounts if both authentication methods are supported.
+# Here we assume that CAS never returns a user name suffixed with double underscore, so we can append such characters
+# to the end of our internal user usernames.
+INTERNAL_USERNAME_FORMAT = "{}__"
 
 # Bootstrap mapping for flashbag message tags
 
@@ -211,8 +218,9 @@ EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
-EMAIL_SENDER_INVITATION = 'invite@localhost'
-EMAIL_SENDER_NOTIFIER = 'notify@localhost'
+EMAIL_SENDER_INVITATION = 'invite@testalgo.invalid'
+EMAIL_SENDER_NOTIFIER = 'notify@testalgo.invalid'
+EMAIL_SENDER_RESET = 'reset@testalgo.invalid'
 EMAIL_RECIPIENT_NOTIFIER = ['admin@example.com']
 
 # Redis connection details

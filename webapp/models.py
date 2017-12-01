@@ -447,6 +447,12 @@ class CASUserMeta(models.Model):
         return 'CASUserMeta for user #{}: {}'\
             .format(self.user.id, dumps(self.attributes))
 
+    def has_ext_id(self):
+        try:
+            return not not self.ext_id
+        except CASExtIDNotAvailable:
+            return False
+
     @property
     def ext_id(self):
         try:

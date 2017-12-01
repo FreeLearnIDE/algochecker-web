@@ -30,7 +30,8 @@
 }
 
 .jmb-index {
-    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45));
+    margin-top: -20px;
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('../img/tech_desktop__by_overdose544.jpg');
 }
 
 .jmb-index .container {
@@ -166,4 +167,8 @@ p.pb-10 { padding-bottom: 10px; }
 
 .task-set-label {
     font-size: 20px;
+}
+
+.login-choice-link:hover, .login-choice-link:active, .login-choice-link:focus {
+    text-decoration: none;
 }

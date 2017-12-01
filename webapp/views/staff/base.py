@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from redis.exceptions import ConnectionError as RConnectionError
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -5,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 
 from webapp.forms import TaskGroupForm, TaskForm
-from webapp.models import TaskGroup, Submission
+from webapp.models import TaskGroup, Submission, CASUserMeta
 from webapp.utils.access import item_is_staff
 from webapp.utils.redis_facade import get_worker_list, get_queue_contents
 
@@ -40,6 +41,22 @@ def dashboard(request):
         'title': 'Staff Dashboard'
     }
     return render(request, 'webapp/admin/dashboard.html', context)
+
+
+@staff_member_required
+def user_list(request):
+    metas = sorted(CASUserMeta.objects.all(), key=lambda um: um.user.date_joined, reverse=True)
+    users = User.objects.all()
+
+    cas_users = [u.user for u in metas if u.has_ext_id()]
+    int_users = sorted([u for u in users if u not in cas_users], key=lambda u: u.date_joined, reverse=True)
+
+    context = {
+        'cas_users': metas,
+        'int_users': int_users
+    }
+
+    return render(request, 'webapp/admin/user_list.html', context)
 
 
 @staff_member_required

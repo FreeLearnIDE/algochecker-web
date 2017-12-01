@@ -1,0 +1,71 @@
+{% extends "webapp/_layout_narrow.html" %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{{ url('index') }}">Home</a></li>
+        <li><a href="{{ url('staff_dashboard') }}">Staff dashboard</a></li>
+        <li class="active">User list</li>
+    </ol>
+{% endblock %}
+
+{% block body %}
+    <h3>User list</h3>
+    <hr>
+    <div class="clearfix"></div>
+    <h4>Internal users</h4>
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Staff member</th>
+        </tr>
+        {% for u in int_users %}
+        <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.date_joined }}</td>
+            <td>
+                {% if u.is_staff %}
+                    <span class="label label-success">YES</span>
+                {% else %}
+                    <span class="label label-danger">NO</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+    <h4>CAS users</h4>
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>CAS ID</th>
+            <th>Joined</th>
+            <th>Staff member</th>
+        </tr>
+        {% for um in cas_users %}
+        <tr>
+            <td>{{ um.user.username }}</td>
+            <td>{{ um.user.email }}</td>
+            <td>{{ um.ext_id }}</td>
+            <td>{{ um.user.date_joined }}</td>
+            <td>
+                {% if um.user.is_staff %}
+                    <span class="label label-success">YES</span>
+                {% else %}
+                    <span class="label label-danger">NO</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

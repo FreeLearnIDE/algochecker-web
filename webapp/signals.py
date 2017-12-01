@@ -4,6 +4,7 @@ import django_cas_ng.signals
 
 from webapp.models import TaskGroupAccess, Task, CASUserMeta
 from webapp.utils.main import apply_markdown
+from webapp.utils.template import short_name
 from algoweb.settings import CAS_KEY_FIRST_NAME, CAS_KEY_LAST_NAME, CAS_KEY_EMAIL, \
     CAS_KEY_ADMIN_FLAG, CAS_KEY_ADMIN_FLAG_VALUES
 
@@ -16,8 +17,9 @@ def load():
 @receiver(django_cas_ng.signals.cas_user_authenticated)
 def cas_user_authenticated(sender, user, created, attributes, ticket, service, **kwargs):
     # update the data in order to reflect what we had received from CAS
-    user.first_name = attributes[CAS_KEY_FIRST_NAME]
-    user.last_name = attributes[CAS_KEY_LAST_NAME]
+    # FIXME temporary hack for the case of too long first names/last names
+    user.first_name = short_name(attributes[CAS_KEY_FIRST_NAME], max_subparts=2)[:30]
+    user.last_name = short_name(attributes[CAS_KEY_LAST_NAME], max_subparts=2)[:30]
     user.email = attributes[CAS_KEY_EMAIL]
 
     try:

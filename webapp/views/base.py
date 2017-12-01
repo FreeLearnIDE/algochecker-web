@@ -1,3 +1,10 @@
+import os
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from werkzeug.exceptions import Forbidden
+
 import algoweb.settings
 import json
 import redis
@@ -10,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import signing
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
-from django.core.signing import TimestampSigner
+from django.core.signing import TimestampSigner, SignatureExpired
 from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.db.models.expressions import RawSQL
@@ -22,13 +29,15 @@ from django.views.static import serve
 
 from os.path import basename, join as path_join
 
-from webapp.forms import FeedbackFrom
+from webapp.forms import FeedbackFrom, InternalLoginForm, InternalRegisterForm, PasswordForgetInitForm, \
+    PasswordForgetResetForm
 from webapp.models import Task, Submission, SubmissionFile, SubmissionEvaluation, SubmissionTest, TaskGroup, \
     TaskGroupAccess, TaskGroupInviteToken, TaskGroupSet
 from webapp.utils.highlight import highlight_submission_files
 from webapp.utils.redis_facade import upload_submission, get_submission_status
-from webapp.utils.main import check_files
-from algoweb.settings import EMAIL_SENDER_NOTIFIER, EMAIL_RECIPIENT_NOTIFIER
+from webapp.utils.main import check_files, apply_markdown
+from algoweb.settings import EMAIL_SENDER_RESET, EMAIL_SENDER_NOTIFIER, EMAIL_RECIPIENT_NOTIFIER, \
+    INTERNAL_USERNAME_FORMAT, CAS_SERVER_NAME, BASE_DIR
 
 
 def index(request):
@@ -342,7 +351,6 @@ def download_package(request, task_data, package_name):
 
 def get_git_revision():
     import subprocess
-    from algoweb.settings import BASE_DIR
 
     try:
         pr = subprocess.Popen(
@@ -408,3 +416,141 @@ def handle_csp_violation(request):
     logging.warning('CSP VIOLATION: {}'.format(rq))
 
     return HttpResponse('accepted')
+
+
+def choose_login_method(request):
+    if CAS_SERVER_NAME is None:
+        return redirect('internal_login')
+    else:
+        return render(request, 'webapp/choose_login.html', {"cas_server_name": CAS_SERVER_NAME})
+
+
+def choose_internal_login(request):
+    return render(request, 'webapp/internal_choose.html')
+
+
+def internal_login(request):
+    if request.method == 'POST':
+        form = InternalLoginForm(request.POST)
+        username = INTERNAL_USERNAME_FORMAT.format(form.data['username'])
+
+        user = authenticate(username=username, password=form.data['password'])
+
+        if user is not None:
+            login(request, user)
+            messages.info(request, 'Login successful. Welcome {}.'.format(username))
+            return redirect('index')
+        else:
+            form.add_error('username', 'Invalid login or password was provided.')
+    else:
+        form = InternalLoginForm()
+
+    context = {"form": form}
+    return render(request, 'webapp/internal_login.html', context)
+
+
+def internal_logout(request):
+    logout(request)
+    return redirect('index')
+
+
+def internal_forget_link(request, signed_data):
+    try:
+        data = signing.loads(signed_data, max_age=60*60)
+    except SignatureExpired:
+        messages.error(request, 'This password reset link has expired. Please try again.')
+        return redirect('internal_forget')
+
+    if "password_reset_user" not in data:
+        raise Forbidden('Invalid access token.')
+
+    user = User.objects.get(username=data["password_reset_user"])
+
+    if request.method == 'POST':
+        form = PasswordForgetResetForm(request.POST)
+
+        if form.data['password'] != form.data['repeat_password']:
+            form.add_error('repeat_password', 'Provided passwords doesn\'t match each other.')
+
+        if form.is_valid():
+            user.set_password(form.data['password'])
+            user.save()
+            messages.success(request, 'Password was reset succesfully. You may now log in.')
+            return redirect('internal_login')
+    else:
+        form = PasswordForgetResetForm()
+
+    context = {"username": user.username, "form": form, "signed_data": signed_data}
+    return render(request, 'webapp/internal_forget_reset.html', context)
+
+
+def internal_forget(request):
+    if request.method == 'POST':
+        form = PasswordForgetInitForm(request.POST)
+
+        if form.is_valid():
+            username = INTERNAL_USERNAME_FORMAT.format(form.data["username"])
+
+            try:
+                user = User.objects.get(username=username, email=form.data["email"])
+            except User.DoesNotExist:
+                form.add_error('username', 'The provided combination of username and e-mail address doesn\'t exist.')
+            else:
+                signed_data = signing.dumps({"password_reset_user": user.username})
+                reset_url = request.build_absolute_uri(reverse('internal_forget_link', args=[signed_data]))
+
+                html_content = '''
+                    <h2>Algochecker Password Recovery</h2>
+                    <p>In order to reset your password, please click <a href="{}">here</a>.</p>
+                    '''.format(reset_url)
+
+                msg = EmailMessage('Algochecker Account Password Reset', html_content, EMAIL_SENDER_RESET, [user.email])
+                msg.content_subtype = "html"  # main content is now text/html
+                msg.send()
+                messages.success(request, 'Password reset was requested succesfully, please check your mailbox for '
+                                 'further instructions.')
+    else:
+        form = PasswordForgetInitForm()
+
+    context = {"form": form}
+    return render(request, 'webapp/internal_forget.html', context)
+
+
+def internal_register(request):
+    if request.method == 'POST':
+        form = InternalRegisterForm(request.POST)
+
+        if form.data['password'] != form.data['repeat_password']:
+            form.add_error('repeat_password', 'Provided passwords doesn\'t match each other.')
+
+        if User.objects.filter(username=form.data['username']).count() != 0:
+            form.add_error('username', 'User with such username already exists.')
+
+        if form.is_valid():
+            username = INTERNAL_USERNAME_FORMAT.format(form.data['username'])
+
+            try:
+                user = User.objects.create_user(username, form.data['email'], form.data['password'])
+                user.first_name = form.data['first_name']
+                user.last_name = form.data['last_name']
+                user.save()
+
+                messages.info(request, 'Your account was succesfully created. Now please log in.')
+                return redirect('internal_login')
+            except IntegrityError:
+                form.add_error('username', 'User with such username already exists.')
+    else:
+        form = InternalRegisterForm()
+
+    context = {"form": form}
+    return render(request, 'webapp/internal_register.html', context)
+
+
+def terms(request):
+    try:
+        with open(os.path.join(BASE_DIR, 'TERMS.md')) as file:
+            contents = apply_markdown(file.read())
+    except FileNotFoundError:
+        contents = 'In order to make terms page work please create TERMS.md file in the project root directory.'
+
+    return render(request, 'webapp/terms.html', context={'contents': contents})
