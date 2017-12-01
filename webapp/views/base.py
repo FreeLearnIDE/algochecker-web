@@ -419,7 +419,10 @@ def handle_csp_violation(request):
 
 
 def choose_login_method(request):
-    return render(request, 'webapp/choose_login.html', {"cas_server_name": CAS_SERVER_NAME})
+    if CAS_SERVER_NAME is None:
+        return redirect('internal_login')
+    else:
+        return render(request, 'webapp/choose_login.html', {"cas_server_name": CAS_SERVER_NAME})
 
 
 def choose_internal_login(request):
